@@ -13,14 +13,14 @@ declare(strict_types=1);
 
 namespace Gears\EventSourcing\Event;
 
-use function DeepCopy\deep_copy;
 use Gears\Aggregate\AggregateIdentity;
 use Gears\DTO\ScalarPayloadBehaviour;
 use Gears\Event\Time\SystemTimeProvider;
 use Gears\Event\Time\TimeProvider;
 use Gears\EventSourcing\Aggregate\AggregateBehaviour;
-
 use Gears\Immutability\ImmutabilityBehaviour;
+
+use function DeepCopy\deep_copy;
 
 /**
  * Abstract immutable aggregate event.

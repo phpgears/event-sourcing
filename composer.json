@@ -23,6 +23,7 @@
   "prefer-stable": true,
   "require": {
     "php": "^7.1",
+    "myclabs/deep-copy": "^1.8",
     "phpgears/aggregate": "~0.1"
   },
   "require-dev": {
