@@ -1,0 +1,11 @@
+includes:
+  - vendor/phpstan/phpstan-strict-rules/rules.neon
+  - vendor/phpstan/phpstan-deprecation-rules/rules.neon
+  - vendor/thecodingmachine/phpstan-strict-rules/phpstan-strict-rules.neon
+
+parameters:
+  level: max
+  paths:
+    - src
+  ignoreErrors:
+    - '/^Method Gears\\EventSourcing\\Event\\Abstract(Empty)?AggregateEvent::reconstitute\(\) has no return typehint specified\.$/'
