@@ -13,8 +13,8 @@ declare(strict_types=1);
 
 namespace Gears\EventSourcing\Event;
 
-use Gears\Aggregate\AggregateIdentity;
 use Gears\Event\Event;
+use Gears\Identity\Identity;
 
 /**
  * AggregateEvent interface.
@@ -24,9 +24,9 @@ interface AggregateEvent extends Event
     /**
      * Get aggregate id.
      *
-     * @return AggregateIdentity
+     * @return Identity
      */
-    public function getAggregateId(): AggregateIdentity;
+    public function getAggregateId(): Identity;
 
     /**
      * Get aggregate version.

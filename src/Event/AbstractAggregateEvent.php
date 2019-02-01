@@ -13,11 +13,11 @@ declare(strict_types=1);
 
 namespace Gears\EventSourcing\Event;
 
-use Gears\Aggregate\AggregateIdentity;
 use Gears\DTO\ScalarPayloadBehaviour;
 use Gears\Event\Time\SystemTimeProvider;
 use Gears\Event\Time\TimeProvider;
 use Gears\EventSourcing\Aggregate\AggregateBehaviour;
+use Gears\Identity\Identity;
 use Gears\Immutability\ImmutabilityBehaviour;
 
 use function DeepCopy\deep_copy;
@@ -41,13 +41,13 @@ abstract class AbstractAggregateEvent implements AggregateEvent
     /**
      * Prevent aggregate event direct instantiation.
      *
-     * @param AggregateIdentity    $aggregateId
+     * @param Identity             $aggregateId
      * @param int                  $aggregateVersion
      * @param array<string, mixed> $payload
      * @param \DateTimeImmutable   $createdAt
      */
     final protected function __construct(
-        AggregateIdentity $aggregateId,
+        Identity $aggregateId,
         int $aggregateVersion,
         array $payload,
         \DateTimeImmutable $createdAt
@@ -64,17 +64,14 @@ abstract class AbstractAggregateEvent implements AggregateEvent
     /**
      * Instantiate new aggregate event.
      *
-     * @param AggregateIdentity    $aggregateId
+     * @param Identity             $aggregateId
      * @param array<string, mixed> $payload
      * @param TimeProvider         $timeProvider
      *
      * @return mixed|self
      */
-    final protected static function occurred(
-        AggregateIdentity $aggregateId,
-        array $payload,
-        ?TimeProvider $timeProvider = null
-    ) {
+    final protected static function occurred(Identity $aggregateId, array $payload, ?TimeProvider $timeProvider = null)
+    {
         $timeProvider = $timeProvider ?? new SystemTimeProvider();
 
         return new static(
@@ -88,7 +85,7 @@ abstract class AbstractAggregateEvent implements AggregateEvent
     /**
      * {@inheritdoc}
      */
-    final public function getAggregateId(): AggregateIdentity
+    final public function getAggregateId(): Identity
     {
         return $this->identity;
     }

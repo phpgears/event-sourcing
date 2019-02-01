@@ -13,11 +13,11 @@ declare(strict_types=1);
 
 namespace Gears\EventSourcing\Tests;
 
-use Gears\Aggregate\UuidAggregateIdentity;
 use Gears\EventSourcing\Event\AggregateEvent;
 use Gears\EventSourcing\Event\AggregateEventArrayCollection;
 use Gears\EventSourcing\Tests\Stub\AbstractAggregateEventStub;
 use Gears\EventSourcing\Tests\Stub\AbstractAggregateRootStub;
+use Gears\Identity\UuidIdentity;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -44,7 +44,7 @@ class AbstractAggregateRootTest extends TestCase
     public function testApply(): void
     {
         $aggregateEvent = AbstractAggregateEventStub::instance(
-            UuidAggregateIdentity::fromString('3247cb6e-e9c7-4f3a-9c6c-0dec26a0353f'),
+            UuidIdentity::fromString('3247cb6e-e9c7-4f3a-9c6c-0dec26a0353f'),
             []
         );
 
@@ -63,7 +63,7 @@ class AbstractAggregateRootTest extends TestCase
         $aggregateEvent = AbstractAggregateEventStub::reconstitute(
             [],
             [
-                'aggregateId' => UuidAggregateIdentity::fromString('3247cb6e-e9c7-4f3a-9c6c-0dec26a0353f'),
+                'aggregateId' => UuidIdentity::fromString('3247cb6e-e9c7-4f3a-9c6c-0dec26a0353f'),
                 'aggregateVersion' => 10,
                 'createdAt' => new \DateTimeImmutable('now'),
             ]

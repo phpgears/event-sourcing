@@ -13,11 +13,11 @@ declare(strict_types=1);
 
 namespace Gears\EventSourcing\Event;
 
-use Gears\Aggregate\AggregateIdentity;
 use Gears\DTO\ScalarPayloadBehaviour;
 use Gears\Event\Time\SystemTimeProvider;
 use Gears\Event\Time\TimeProvider;
 use Gears\EventSourcing\Aggregate\AggregateBehaviour;
+use Gears\Identity\Identity;
 use Gears\Immutability\ImmutabilityBehaviour;
 
 use function DeepCopy\deep_copy;
@@ -41,15 +41,12 @@ abstract class AbstractEmptyAggregateEvent implements AggregateEvent
     /**
      * Prevent aggregate event direct instantiation.
      *
-     * @param AggregateIdentity  $aggregateId
+     * @param Identity           $aggregateId
      * @param int                $aggregateVersion
      * @param \DateTimeImmutable $createdAt
      */
-    final protected function __construct(
-        AggregateIdentity $aggregateId,
-        int $aggregateVersion,
-        \DateTimeImmutable $createdAt
-    ) {
+    final protected function __construct(Identity $aggregateId, int $aggregateVersion, \DateTimeImmutable $createdAt)
+    {
         $this->checkImmutability();
 
         $this->identity = $aggregateId;
@@ -60,15 +57,13 @@ abstract class AbstractEmptyAggregateEvent implements AggregateEvent
     /**
      * Instantiate new aggregate event.
      *
-     * @param AggregateIdentity $aggregateId
-     * @param TimeProvider      $timeProvider
+     * @param Identity     $aggregateId
+     * @param TimeProvider $timeProvider
      *
      * @return mixed|self
      */
-    final protected static function occurred(
-        AggregateIdentity $aggregateId,
-        ?TimeProvider $timeProvider = null
-    ) {
+    final protected static function occurred(Identity $aggregateId, ?TimeProvider $timeProvider = null)
+    {
         $timeProvider = $timeProvider ?? new SystemTimeProvider();
 
         return new static(
@@ -81,7 +76,7 @@ abstract class AbstractEmptyAggregateEvent implements AggregateEvent
     /**
      * {@inheritdoc}
      */
-    final public function getAggregateId(): AggregateIdentity
+    final public function getAggregateId(): Identity
     {
         return $this->identity;
     }

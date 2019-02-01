@@ -13,9 +13,9 @@ declare(strict_types=1);
 
 namespace Gears\EventSourcing\Tests\Event;
 
-use Gears\Aggregate\UuidAggregateIdentity;
 use Gears\EventSourcing\Tests\Stub\AbstractAggregateEventStub;
 use Gears\EventSourcing\Tests\Stub\AbstractEmptyAggregateEventStub;
+use Gears\Identity\UuidIdentity;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -26,7 +26,7 @@ class AbstractAggregateEventTest extends TestCase
     public function testCreation(): void
     {
         $aggregateEvent = AbstractAggregateEventStub::instance(
-            UuidAggregateIdentity::fromString('3247cb6e-e9c7-4f3a-9c6c-0dec26a0353f'),
+            UuidIdentity::fromString('3247cb6e-e9c7-4f3a-9c6c-0dec26a0353f'),
             []
         );
 
@@ -35,7 +35,7 @@ class AbstractAggregateEventTest extends TestCase
 
     public function testReconstitution(): void
     {
-        $identity = UuidAggregateIdentity::fromString('3247cb6e-e9c7-4f3a-9c6c-0dec26a0353f');
+        $identity = UuidIdentity::fromString('3247cb6e-e9c7-4f3a-9c6c-0dec26a0353f');
         $now = new \DateTimeImmutable('now');
 
         $aggregateEvent = AbstractEmptyAggregateEventStub::reconstitute(
@@ -55,7 +55,7 @@ class AbstractAggregateEventTest extends TestCase
     public function testNewWith(): void
     {
         $aggregateEvent = AbstractEmptyAggregateEventStub::instance(
-            UuidAggregateIdentity::fromString('3247cb6e-e9c7-4f3a-9c6c-0dec26a0353f')
+            UuidIdentity::fromString('3247cb6e-e9c7-4f3a-9c6c-0dec26a0353f')
         );
 
         $newAggregateEvent = $aggregateEvent->withAggregateVersion(10);

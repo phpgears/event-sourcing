@@ -13,11 +13,11 @@ declare(strict_types=1);
 
 namespace Gears\EventSourcing\Aggregate;
 
-use Gears\Aggregate\AggregateIdentity;
 use Gears\EventSourcing\Aggregate\Exception\AggregateException;
 use Gears\EventSourcing\Event\AggregateEvent;
 use Gears\EventSourcing\Event\AggregateEventArrayCollection;
 use Gears\EventSourcing\Event\AggregateEventCollection;
+use Gears\Identity\Identity;
 
 /**
  * Abstract aggregate root class.
@@ -42,23 +42,11 @@ abstract class AbstractAggregateRoot implements AggregateRoot
     /**
      * Set aggregate identity.
      *
-     * @param AggregateIdentity $identity
+     * @param Identity $identity
      */
-    final protected function setIdentity(AggregateIdentity $identity): void
+    final protected function setIdentity(Identity $identity): void
     {
         $this->identity = $identity;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    final public function collectRecordedEvents(): AggregateEventCollection
-    {
-        $recordedEvents = new AggregateEventArrayCollection($this->recordedEvents);
-
-        $this->recordedEvents = [];
-
-        return $recordedEvents;
     }
 
     /**
@@ -123,5 +111,33 @@ abstract class AbstractAggregateRoot implements AggregateRoot
         }
 
         $this->$method($event);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    final public function getRecordedEvents(): AggregateEventCollection
+    {
+        return new AggregateEventArrayCollection($this->recordedEvents);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    final public function clearRecordedEvents(): void
+    {
+        $this->recordedEvents = [];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    final public function collectRecordedEvents(): AggregateEventCollection
+    {
+        $recordedEvents = new AggregateEventArrayCollection($this->recordedEvents);
+
+        $this->recordedEvents = [];
+
+        return $recordedEvents;
     }
 }

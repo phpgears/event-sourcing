@@ -13,8 +13,8 @@ declare(strict_types=1);
 
 namespace Gears\EventSourcing\Tests;
 
-use Gears\Aggregate\UuidAggregateIdentity;
 use Gears\EventSourcing\Tests\Stub\AggregateBehaviourStub;
+use Gears\Identity\UuidIdentity;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -24,7 +24,7 @@ class AggregateBehaviourTest extends TestCase
 {
     public function testGetters(): void
     {
-        $identity = UuidAggregateIdentity::fromString('3247cb6e-e9c7-4f3a-9c6c-0dec26a0353f');
+        $identity = UuidIdentity::fromString('3247cb6e-e9c7-4f3a-9c6c-0dec26a0353f');
 
         $stub = new AggregateBehaviourStub($identity, 10);
 

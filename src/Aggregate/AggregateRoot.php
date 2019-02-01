@@ -13,8 +13,8 @@ declare(strict_types=1);
 
 namespace Gears\EventSourcing\Aggregate;
 
-use Gears\Aggregate\AggregateIdentity;
 use Gears\EventSourcing\Event\AggregateEventCollection;
+use Gears\Identity\Identity;
 
 /**
  * AggregateRoot interface.
@@ -24,9 +24,9 @@ interface AggregateRoot
     /**
      * Get aggregate identity.
      *
-     * @return AggregateIdentity
+     * @return Identity
      */
-    public function getIdentity(): AggregateIdentity;
+    public function getIdentity(): Identity;
 
     /**
      * Get aggregate version.
@@ -36,11 +36,13 @@ interface AggregateRoot
     public function getVersion(): int;
 
     /**
-     * Collect recorded events and remove them from aggregate root.
+     * Reconstitute aggregate from a list of events.
      *
-     * @return AggregateEventCollection
+     * @param AggregateEventCollection $events
+     *
+     * @return mixed|self
      */
-    public function collectRecordedEvents(): AggregateEventCollection;
+    public static function reconstituteFromEvents(AggregateEventCollection $events);
 
     /**
      * Replay events.
@@ -50,11 +52,21 @@ interface AggregateRoot
     public function replayEvents(AggregateEventCollection $events): void;
 
     /**
-     * Reconstitute aggregate from a list of events.
+     * Get recorded events.
      *
-     * @param AggregateEventCollection $events
-     *
-     * @return mixed|self
+     * @return AggregateEventCollection
      */
-    public static function reconstituteFromEvents(AggregateEventCollection $events);
+    public function getRecordedEvents(): AggregateEventCollection;
+
+    /**
+     * Remove recorded events from aggregate root.
+     */
+    public function clearRecordedEvents(): void;
+
+    /**
+     * Collect recorded events and remove them from aggregate root.
+     *
+     * @return AggregateEventCollection
+     */
+    public function collectRecordedEvents(): AggregateEventCollection;
 }

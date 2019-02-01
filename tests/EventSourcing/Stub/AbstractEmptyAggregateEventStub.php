@@ -13,8 +13,8 @@ declare(strict_types=1);
 
 namespace Gears\EventSourcing\Tests\Stub;
 
-use Gears\Aggregate\AggregateIdentity;
 use Gears\EventSourcing\Event\AbstractEmptyAggregateEvent;
+use Gears\Identity\Identity;
 
 /**
  * Abstract empty event stub class.
@@ -24,11 +24,11 @@ class AbstractEmptyAggregateEventStub extends AbstractEmptyAggregateEvent
     /**
      * Instantiate event.
      *
-     * @param AggregateIdentity $aggregateId
+     * @param Identity $aggregateId
      *
      * @return self
      */
-    public static function instance(AggregateIdentity $aggregateId): self
+    public static function instance(Identity $aggregateId): self
     {
         return self::occurred($aggregateId);
     }

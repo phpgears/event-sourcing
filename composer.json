@@ -24,7 +24,7 @@
   "require": {
     "php": "^7.1",
     "myclabs/deep-copy": "^1.8",
-    "phpgears/aggregate": "~0.1"
+    "phpgears/aggregate": "~0.1.2"
   },
   "require-dev": {
     "brainmaestro/composer-git-hooks": "^2.1",

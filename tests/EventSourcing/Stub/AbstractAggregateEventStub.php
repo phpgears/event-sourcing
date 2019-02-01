@@ -13,8 +13,8 @@ declare(strict_types=1);
 
 namespace Gears\EventSourcing\Tests\Stub;
 
-use Gears\Aggregate\AggregateIdentity;
 use Gears\EventSourcing\Event\AbstractAggregateEvent;
+use Gears\Identity\Identity;
 
 /**
  * Abstract aggregate event stub class.
@@ -24,12 +24,12 @@ class AbstractAggregateEventStub extends AbstractAggregateEvent
     /**
      * Instantiate event.
      *
-     * @param AggregateIdentity $aggregateId
-     * @param array             $payload
+     * @param Identity $aggregateId
+     * @param array    $payload
      *
      * @return self
      */
-    public static function instance(AggregateIdentity $aggregateId, array $payload): self
+    public static function instance(Identity $aggregateId, array $payload): self
     {
         return static::occurred($aggregateId, $payload);
     }

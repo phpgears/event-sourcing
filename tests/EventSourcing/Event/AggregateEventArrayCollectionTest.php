@@ -13,10 +13,10 @@ declare(strict_types=1);
 
 namespace Gears\Event\Tests;
 
-use Gears\Aggregate\UuidAggregateIdentity;
 use Gears\EventSourcing\Event\AggregateEvent;
 use Gears\EventSourcing\Event\AggregateEventArrayCollection;
 use Gears\EventSourcing\Tests\Stub\AbstractEmptyAggregateEventStub;
+use Gears\Identity\UuidIdentity;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -35,7 +35,7 @@ class AggregateEventArrayCollectionTest extends TestCase
 
     public function testCollection(): void
     {
-        $identity = UuidAggregateIdentity::fromString('3247cb6e-e9c7-4f3a-9c6c-0dec26a0353f');
+        $identity = UuidIdentity::fromString('3247cb6e-e9c7-4f3a-9c6c-0dec26a0353f');
 
         $events = [
             AbstractEmptyAggregateEventStub::instance($identity),

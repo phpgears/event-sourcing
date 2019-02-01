@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Gears\EventSourcing\Aggregate;
 
-use Gears\Aggregate\AggregateIdentity;
+use Gears\Identity\Identity;
 
 /**
  * Abstract domain event.
@@ -21,7 +21,7 @@ use Gears\Aggregate\AggregateIdentity;
 trait AggregateBehaviour
 {
     /**
-     * @var AggregateIdentity
+     * @var Identity
      */
     private $identity;
 
@@ -33,9 +33,9 @@ trait AggregateBehaviour
     /**
      * Get aggregate identity.
      *
-     * @return AggregateIdentity
+     * @return Identity
      */
-    final public function getIdentity(): AggregateIdentity
+    final public function getIdentity(): Identity
     {
         return $this->identity;
     }
