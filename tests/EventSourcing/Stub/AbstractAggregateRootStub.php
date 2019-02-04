@@ -30,7 +30,7 @@ class AbstractAggregateRootStub extends AbstractAggregateRoot
     {
         $aggregateRoot = new self();
 
-        $aggregateRoot->recordEvent($event);
+        $aggregateRoot->recordAggregateEvent($event);
 
         return $aggregateRoot;
     }

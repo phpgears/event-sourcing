@@ -13,13 +13,14 @@ declare(strict_types=1);
 
 namespace Gears\EventSourcing\Aggregate;
 
+use Gears\Aggregate\AggregateRoot as BaseAggregateRoot;
 use Gears\EventSourcing\Event\AggregateEventCollection;
 use Gears\Identity\Identity;
 
 /**
  * AggregateRoot interface.
  */
-interface AggregateRoot
+interface AggregateRoot extends BaseAggregateRoot
 {
     /**
      * Get aggregate identity.
@@ -36,37 +37,37 @@ interface AggregateRoot
     public function getVersion(): int;
 
     /**
-     * Reconstitute aggregate from a list of events.
+     * Reconstitute aggregate from a list of aggregate events.
      *
      * @param AggregateEventCollection $events
      *
      * @return mixed|self
      */
-    public static function reconstituteFromEvents(AggregateEventCollection $events);
+    public static function reconstituteFromAggregateEvents(AggregateEventCollection $events);
 
     /**
-     * Replay events.
+     * Replay aggregate events.
      *
      * @param AggregateEventCollection $events
      */
-    public function replayEvents(AggregateEventCollection $events): void;
+    public function replayAggregateEvents(AggregateEventCollection $events): void;
 
     /**
-     * Get recorded events.
+     * Get recorded aggregate events.
      *
      * @return AggregateEventCollection
      */
-    public function getRecordedEvents(): AggregateEventCollection;
+    public function getRecordedAggregateEvents(): AggregateEventCollection;
 
     /**
-     * Remove recorded events from aggregate root.
+     * Remove recorded aggregate events from aggregate root.
      */
-    public function clearRecordedEvents(): void;
+    public function clearRecordedAggregateEvents(): void;
 
     /**
-     * Collect recorded events and remove them from aggregate root.
+     * Collect recorded aggregate events and remove them from aggregate root.
      *
      * @return AggregateEventCollection
      */
-    public function collectRecordedEvents(): AggregateEventCollection;
+    public function collectRecordedAggregateEvents(): AggregateEventCollection;
 }

@@ -29,7 +29,7 @@ class AbstractAggregateRootTest extends TestCase
      * @expectedException  \Gears\EventSourcing\Aggregate\Exception\AggregateException
      * @expectedExceptionMessageRegExp /^Aggregate event handling method apply.+ for event .+ does not exist$/
      */
-    public function testNoHandler(): void
+    public function testNoApplyHandler(): void
     {
         $aggregateEvent = $this->getMockBuilder(AggregateEvent::class)->getMock();
         $aggregateEvent->expects($this->any())
@@ -41,7 +41,7 @@ class AbstractAggregateRootTest extends TestCase
         AbstractAggregateRootStub::instantiateWithEvent($aggregateEvent);
     }
 
-    public function testApply(): void
+    public function testRecordedAggregateEvents(): void
     {
         $aggregateEvent = AbstractAggregateEventStub::instance(
             UuidIdentity::fromString('3247cb6e-e9c7-4f3a-9c6c-0dec26a0353f'),
@@ -50,12 +50,18 @@ class AbstractAggregateRootTest extends TestCase
 
         $aggregateRoot = AbstractAggregateRootStub::instantiateWithEvent($aggregateEvent);
 
-        $this->assertSame($aggregateEvent->getAggregateId(), $aggregateRoot->getIdentity());
-        $this->assertSame(1, $aggregateRoot->getVersion());
-        $recordedEvents = $aggregateRoot->collectRecordedEvents();
-        $this->assertCount(0, $aggregateRoot->collectRecordedEvents());
-        $this->assertCount(1, $recordedEvents);
-        $this->assertEquals([$aggregateEvent], \iterator_to_array($recordedEvents));
+        $this->assertCount(1, $aggregateRoot->getRecordedAggregateEvents());
+        $aggregateRoot->clearRecordedAggregateEvents();
+        $this->assertCount(0, $aggregateRoot->getRecordedAggregateEvents());
+
+        $aggregateRoot = AbstractAggregateRootStub::instantiateWithEvent($aggregateEvent);
+
+        $this->assertCount(1, $aggregateRoot->getRecordedAggregateEvents());
+        $recordedAggregateEvents = $aggregateRoot->collectRecordedAggregateEvents();
+        $this->assertCount(0, $aggregateRoot->collectRecordedAggregateEvents());
+        $this->assertCount(1, $recordedAggregateEvents);
+
+        $this->assertEquals([$aggregateEvent], \iterator_to_array($recordedAggregateEvents));
     }
 
     public function testReconstitute(): void
@@ -71,10 +77,10 @@ class AbstractAggregateRootTest extends TestCase
 
         $collection = new AggregateEventArrayCollection([$aggregateEvent]);
 
-        $aggregateRoot = AbstractAggregateRootStub::reconstituteFromEvents($collection);
+        $aggregateRoot = AbstractAggregateRootStub::reconstituteFromAggregateEvents($collection);
 
         $this->assertEquals($aggregateEvent->getAggregateId(), $aggregateRoot->getIdentity());
         $this->assertEquals($aggregateEvent->getAggregateVersion(), $aggregateRoot->getVersion());
-        $this->assertCount(0, $aggregateRoot->collectRecordedEvents());
+        $this->assertCount(0, $aggregateRoot->collectRecordedAggregateEvents());
     }
 }

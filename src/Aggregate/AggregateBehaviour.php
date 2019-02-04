@@ -16,7 +16,7 @@ namespace Gears\EventSourcing\Aggregate;
 use Gears\Identity\Identity;
 
 /**
- * Abstract domain event.
+ * Aggregate behaviour trait.
  */
 trait AggregateBehaviour
 {

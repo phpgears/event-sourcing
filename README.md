@@ -32,37 +32,19 @@ require './vendor/autoload.php';
 
 ### Aggregate identity
 
-By extending `Gears\Aggregate\AbstractAggregateIdentity` you can easily create your own event-sourcing identities
+Aggregate identities are provided by [gears/identity](https://github.com/phpgears/identity), head over there to learn about them
 
-```php
-use Gears\EventSourcing\AbstractAggregateIdentity;
-
-class CustomAggregateIdentity extends AbstractAggregateIdentity
-{
-    public static function fromString(string $value)
-    {
-        // Check $value validity
-
-        return new static($value);
-    }
-}
-```
-
-Most used event-sourcing identities are UUID values, for that reason there is already a `Gears\Aggregate\UuidAggregateIdentity` identity ready to be used
-
-If you want to expand on event-sourcing identities head to [gears/identity](https://github.com/phpgears/identity)
-
-#### Aggregate events
+### Aggregate events
 
 Aggregate Events must implement `Gears\EventSourcing\Event\AggregateEvent` interface so they can be used by Aggregate roots. You can extend from `Gears\EventSourcing\Event\AbstractAggregateEvent` for simplicity 
 
 ```php
-use Gears\Aggregate\AggregateIdentity;
 use Gears\EventSourcing\Event\AbstractAggregateEvent;
+use Gears\Identity\Identity;
 
 class AggregateCreated extends AbstractAggregateEvent
 {
-    public static function instantiate(AggregateIdentity $aggregateId)
+    public static function instantiate(Identity $aggregateId)
     {
         return self::occurred($aggregateId, []);
     }
@@ -70,7 +52,7 @@ class AggregateCreated extends AbstractAggregateEvent
 
 class SomethingHappened extends AbstractAggregateEvent
 {
-    public static function hasHappened(AggregateIdentity $aggregateId, string $whatHappened)
+    public static function hasHappened(Identity $aggregateId, string $whatHappened)
     {
         return self::occurred($aggregateId, ['thing' => $whatHappened]);
     }
@@ -86,23 +68,23 @@ This events are then recorded and applied on Aggregate roots
 Aggregate roots should implement `Gears\EventSourcing\Aggregate\AggregateRoot` interface. You can extend from `Gears\EventSourcing\Aggregate\AbstractAggregateRoot` for simplicity
 
 ```php
-use Gears\Aggregate\AggregateIdentity;
 use Gears\EventSourcing\Aggregate\AbstractAggregateRoot;
+use Gears\Identity\Identity;
 
 class CustomAggregate extends AbstractAggregateRoot
 {
-    public static function create(AggregateIdentity $identity): self
+    public static function create(Identity $identity): self
     {
         $instance = new self();
         
-        $instance->recordEvent(AggregateCreated::instantiate($identity));
+        $instance->recordAggregateEvent(AggregateCreated::instantiate($identity));
         
         return $instance;
     }
 
     public function doSomething(): void
     {
-        $this->recordEvent(SomethingHappened::hasHappened($this->getIdentity(), 'this happened'));
+        $this->recordAggregateEvent(SomethingHappened::hasHappened($this->getIdentity(), 'this happened'));
     }
 
     protected function applyAggregateCreated(AggregateCreated $event): void
@@ -122,11 +104,11 @@ Every operation in aggregates should be made through aggregate events, even aggr
 This events should be later collected and stored on an event store and sent to an event bus such as [gears/event](https://github.com/phpgears/event)
 
 ```php
-$aggregateId = new UuidAggregate(CustomAggregateIdentity::fromString('4c4316cb-b48b-44fb-a034-90d789966bac'));
+$aggregateId = new UuidAggregate(CustomIdentity::fromString('4c4316cb-b48b-44fb-a034-90d789966bac'));
 $customAggregate = CustomAggregate::create($aggregateId);
 $customAggregate->doSomething();
 
-foreach ($customAggregate->collectRecordedEvents() as $aggregateEvent) {
+foreach ($customAggregate->collectRecordedAggregateEvents() as $aggregateEvent) {
     /** @var \Gears\Event\EventBus $eventBus */
     $eventBus->dispatch($aggregateEvent);
 }

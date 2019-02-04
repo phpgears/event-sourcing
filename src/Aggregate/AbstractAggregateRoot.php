@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Gears\EventSourcing\Aggregate;
 
+use Gears\Aggregate\EventBehaviour;
 use Gears\EventSourcing\Aggregate\Exception\AggregateException;
 use Gears\EventSourcing\Event\AggregateEvent;
 use Gears\EventSourcing\Event\AggregateEventArrayCollection;
@@ -24,12 +25,12 @@ use Gears\Identity\Identity;
  */
 abstract class AbstractAggregateRoot implements AggregateRoot
 {
-    use AggregateBehaviour;
+    use AggregateBehaviour, EventBehaviour;
 
     /**
      * @var AggregateEvent[]
      */
-    private $recordedEvents = [];
+    private $recordedAggregateEvents = [];
 
     /**
      * Prevent aggregate root direct instantiation.
@@ -52,10 +53,10 @@ abstract class AbstractAggregateRoot implements AggregateRoot
     /**
      * {@inheritdoc}
      */
-    final public static function reconstituteFromEvents(AggregateEventCollection $events): self
+    final public static function reconstituteFromAggregateEvents(AggregateEventCollection $events): self
     {
         $instance = new static();
-        $instance->replayEvents($events);
+        $instance->replayAggregateEvents($events);
 
         return $instance;
     }
@@ -65,39 +66,39 @@ abstract class AbstractAggregateRoot implements AggregateRoot
      *
      * @throws AggregateException
      */
-    final public function replayEvents(AggregateEventCollection $events): void
+    final public function replayAggregateEvents(AggregateEventCollection $events): void
     {
         foreach ($events as $event) {
             $this->version = $event->getAggregateVersion();
 
-            $this->applyEvent($event);
+            $this->applyAggregateEvent($event);
         }
     }
 
     /**
-     * Record event.
+     * Record aggregate event.
      *
      * @param AggregateEvent $event
      *
      * @throws AggregateException
      */
-    final protected function recordEvent(AggregateEvent $event): void
+    final protected function recordAggregateEvent(AggregateEvent $event): void
     {
         $this->version++;
 
-        $this->recordedEvents[] = $event->withAggregateVersion($this->version);
+        $this->recordedAggregateEvents[] = $event->withAggregateVersion($this->version);
 
-        $this->applyEvent($event);
+        $this->applyAggregateEvent($event);
     }
 
     /**
-     * Apply event.
+     * Apply aggregate event.
      *
      * @param AggregateEvent $event
      *
      * @throws AggregateException
      */
-    protected function applyEvent(AggregateEvent $event): void
+    protected function applyAggregateEvent(AggregateEvent $event): void
     {
         $eventParts = \explode('\\', \ucfirst(\get_class($event)));
         $method = 'apply' . \end($eventParts);
@@ -116,27 +117,27 @@ abstract class AbstractAggregateRoot implements AggregateRoot
     /**
      * {@inheritdoc}
      */
-    final public function getRecordedEvents(): AggregateEventCollection
+    final public function getRecordedAggregateEvents(): AggregateEventCollection
     {
-        return new AggregateEventArrayCollection($this->recordedEvents);
+        return new AggregateEventArrayCollection($this->recordedAggregateEvents);
     }
 
     /**
      * {@inheritdoc}
      */
-    final public function clearRecordedEvents(): void
+    final public function clearRecordedAggregateEvents(): void
     {
-        $this->recordedEvents = [];
+        $this->recordedAggregateEvents = [];
     }
 
     /**
      * {@inheritdoc}
      */
-    final public function collectRecordedEvents(): AggregateEventCollection
+    final public function collectRecordedAggregateEvents(): AggregateEventCollection
     {
-        $recordedEvents = new AggregateEventArrayCollection($this->recordedEvents);
+        $recordedEvents = new AggregateEventArrayCollection($this->recordedAggregateEvents);
 
-        $this->recordedEvents = [];
+        $this->recordedAggregateEvents = [];
 
         return $recordedEvents;
     }
