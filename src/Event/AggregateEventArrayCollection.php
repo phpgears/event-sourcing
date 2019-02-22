@@ -46,28 +46,20 @@ final class AggregateEventArrayCollection implements AggregateEventCollection
 
     /**
      * {@inheritdoc}
-     */
-    public function rewind(): void
-    {
-        \reset($this->events);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function valid(): bool
-    {
-        return \key($this->events) !== null;
-    }
-
-    /**
-     * {@inheritdoc}
      *
      * @return AggregateEvent
      */
     public function current(): AggregateEvent
     {
         return \current($this->events);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function next(): void
+    {
+        \next($this->events);
     }
 
     /**
@@ -83,8 +75,16 @@ final class AggregateEventArrayCollection implements AggregateEventCollection
     /**
      * {@inheritdoc}
      */
-    public function next(): void
+    public function valid(): bool
     {
-        \next($this->events);
+        return \key($this->events) !== null;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function rewind(): void
+    {
+        \reset($this->events);
     }
 }
