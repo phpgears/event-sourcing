@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace Gears\Event\Tests;
+namespace Gears\EventSourcing\Tests\Event;
 
 use Gears\EventSourcing\Event\AggregateEvent;
 use Gears\EventSourcing\Event\AggregateEventArrayCollection;

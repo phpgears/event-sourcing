@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace Gears\EventSourcing\Tests;
+namespace Gears\EventSourcing\Tests\Aggregate;
 
 use Gears\EventSourcing\Tests\Stub\AggregateBehaviourStub;
 use Gears\Identity\UuidIdentity;

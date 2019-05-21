@@ -98,10 +98,9 @@ abstract class AbstractAggregateRoot implements AggregateRoot
      *
      * @throws AggregateException
      */
-    protected function applyAggregateEvent(AggregateEvent $event): void
+    final protected function applyAggregateEvent(AggregateEvent $event): void
     {
-        $eventParts = \explode('\\', \ucfirst(\get_class($event)));
-        $method = 'apply' . \end($eventParts);
+        $method = $this->getAggregateEventApplyMethodName($event);
 
         if (!\method_exists($this, $method)) {
             throw new AggregateException(\sprintf(
@@ -112,6 +111,22 @@ abstract class AbstractAggregateRoot implements AggregateRoot
         }
 
         $this->$method($event);
+    }
+
+    /**
+     * Get event apply method name.
+     *
+     * @param AggregateEvent $event
+     *
+     * @return string
+     */
+    protected function getAggregateEventApplyMethodName(AggregateEvent $event): string
+    {
+        $classParts = \explode('\\', \get_class($event));
+        /** @var string $className */
+        $className = \end($classParts);
+
+        return 'apply' . \str_replace(' ', '', \ucwords(\strtr($className, '_-', '  ')));
     }
 
     /**
