@@ -15,7 +15,7 @@ namespace Gears\EventSourcing\Event;
 
 use Gears\EventSourcing\Event\Exception\InvalidAggregateEventException;
 
-final class AggregateEventIteratorCollection implements AggregateEventCollection
+final class AggregateEventIteratorStream implements AggregateEventStream
 {
     /**
      * @var \Iterator
@@ -23,7 +23,7 @@ final class AggregateEventIteratorCollection implements AggregateEventCollection
     private $iterator;
 
     /**
-     * AggregateEventIteratorCollection constructor.
+     * AggregateEventIteratorStream constructor.
      *
      * @param \Iterator $iterator
      */
@@ -43,7 +43,7 @@ final class AggregateEventIteratorCollection implements AggregateEventCollection
 
         if (!$event instanceof AggregateEvent) {
             throw new InvalidAggregateEventException(\sprintf(
-                'Aggregate event collection only accepts %s, %s given',
+                'Aggregate event stream only accepts %s, %s given',
                 AggregateEvent::class,
                 \is_object($event) ? \get_class($event) : \gettype($event)
             ));

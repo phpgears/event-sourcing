@@ -16,8 +16,8 @@ namespace Gears\EventSourcing\Aggregate;
 use Gears\Aggregate\EventBehaviour;
 use Gears\EventSourcing\Aggregate\Exception\AggregateException;
 use Gears\EventSourcing\Event\AggregateEvent;
-use Gears\EventSourcing\Event\AggregateEventArrayCollection;
-use Gears\EventSourcing\Event\AggregateEventCollection;
+use Gears\EventSourcing\Event\AggregateEventArrayStream;
+use Gears\EventSourcing\Event\AggregateEventStream;
 use Gears\Identity\Identity;
 
 /**
@@ -53,10 +53,10 @@ abstract class AbstractAggregateRoot implements AggregateRoot
     /**
      * {@inheritdoc}
      */
-    final public static function reconstituteFromAggregateEvents(AggregateEventCollection $events): self
+    final public static function reconstituteFromEventStream(AggregateEventStream $eventStream): self
     {
         $instance = new static();
-        $instance->replayAggregateEvents($events);
+        $instance->replayAggregateEventStream($eventStream);
 
         return $instance;
     }
@@ -66,9 +66,9 @@ abstract class AbstractAggregateRoot implements AggregateRoot
      *
      * @throws AggregateException
      */
-    final public function replayAggregateEvents(AggregateEventCollection $events): void
+    final public function replayAggregateEventStream(AggregateEventStream $eventStream): void
     {
-        foreach ($events as $event) {
+        foreach ($eventStream as $event) {
             $this->version = $event->getAggregateVersion();
 
             $this->applyAggregateEvent($event);
@@ -132,9 +132,9 @@ abstract class AbstractAggregateRoot implements AggregateRoot
     /**
      * {@inheritdoc}
      */
-    final public function getRecordedAggregateEvents(): AggregateEventCollection
+    final public function getRecordedAggregateEvents(): AggregateEventStream
     {
-        return new AggregateEventArrayCollection($this->recordedAggregateEvents);
+        return new AggregateEventArrayStream($this->recordedAggregateEvents);
     }
 
     /**
@@ -148,9 +148,9 @@ abstract class AbstractAggregateRoot implements AggregateRoot
     /**
      * {@inheritdoc}
      */
-    final public function collectRecordedAggregateEvents(): AggregateEventCollection
+    final public function collectRecordedAggregateEvents(): AggregateEventStream
     {
-        $recordedEvents = new AggregateEventArrayCollection($this->recordedAggregateEvents);
+        $recordedEvents = new AggregateEventArrayStream($this->recordedAggregateEvents);
 
         $this->recordedAggregateEvents = [];
 

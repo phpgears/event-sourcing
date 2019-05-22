@@ -14,26 +14,26 @@ declare(strict_types=1);
 namespace Gears\EventSourcing\Tests\Event;
 
 use Gears\EventSourcing\Event\AggregateEvent;
-use Gears\EventSourcing\Event\AggregateEventArrayCollection;
+use Gears\EventSourcing\Event\AggregateEventIteratorStream;
 use Gears\EventSourcing\Tests\Stub\AbstractEmptyAggregateEventStub;
 use Gears\Identity\UuidIdentity;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Aggregate event array collection test.
+ * Aggregate event iterator stream test.
  */
-class AggregateEventArrayCollectionTest extends TestCase
+class AggregateEventIteratorStreamTest extends TestCase
 {
     /**
      * @expectedException \Gears\EventSourcing\Event\Exception\InvalidAggregateEventException
-     * @expectedExceptionMessageRegExp /Aggregate event collection only accepts .+, string given/
+     * @expectedExceptionMessageRegExp /Aggregate event stream only accepts .+, string given/
      */
-    public function testInvalidTypeCollection(): void
+    public function testInvalidTypeStream(): void
     {
-        new AggregateEventArrayCollection(['event']);
+        (new AggregateEventIteratorStream(new \ArrayIterator(['event'])))->current();
     }
 
-    public function testCollection(): void
+    public function testStream(): void
     {
         $identity = UuidIdentity::fromString('3247cb6e-e9c7-4f3a-9c6c-0dec26a0353f');
 
@@ -41,12 +41,12 @@ class AggregateEventArrayCollectionTest extends TestCase
             AbstractEmptyAggregateEventStub::instance($identity),
             AbstractEmptyAggregateEventStub::instance($identity),
         ];
-        $collection = new AggregateEventArrayCollection($events);
+        $eventStream = new AggregateEventIteratorStream(new \ArrayIterator($events));
 
-        foreach ($collection as $event) {
+        foreach ($eventStream as $event) {
             $this->assertInstanceOf(AggregateEvent::class, $event);
         }
 
-        $this->assertNull($collection->key());
+        $this->assertNull($eventStream->key());
     }
 }

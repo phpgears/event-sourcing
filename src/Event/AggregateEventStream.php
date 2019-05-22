@@ -14,9 +14,9 @@ declare(strict_types=1);
 namespace Gears\EventSourcing\Event;
 
 /**
- * Aggregate event collection.
+ * Aggregate event stream.
  */
-interface AggregateEventCollection extends \Iterator
+interface AggregateEventStream extends \Iterator
 {
     /**
      * {@inheritdoc}

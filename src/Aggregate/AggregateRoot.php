@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Gears\EventSourcing\Aggregate;
 
 use Gears\Aggregate\AggregateRoot as BaseAggregateRoot;
-use Gears\EventSourcing\Event\AggregateEventCollection;
+use Gears\EventSourcing\Event\AggregateEventStream;
 use Gears\Identity\Identity;
 
 /**
@@ -37,27 +37,27 @@ interface AggregateRoot extends BaseAggregateRoot
     public function getVersion(): int;
 
     /**
-     * Reconstitute aggregate from a list of aggregate events.
+     * Reconstitute aggregate from a list of aggregate event stream.
      *
-     * @param AggregateEventCollection $events
+     * @param AggregateEventStream $eventStream
      *
      * @return mixed|self
      */
-    public static function reconstituteFromAggregateEvents(AggregateEventCollection $events);
+    public static function reconstituteFromEventStream(AggregateEventStream $eventStream);
 
     /**
-     * Replay aggregate events.
+     * Replay aggregate event stream.
      *
-     * @param AggregateEventCollection $events
+     * @param AggregateEventStream $eventStream
      */
-    public function replayAggregateEvents(AggregateEventCollection $events): void;
+    public function replayAggregateEventStream(AggregateEventStream $eventStream): void;
 
     /**
-     * Get recorded aggregate events.
+     * Get recorded aggregate event stream.
      *
-     * @return AggregateEventCollection
+     * @return AggregateEventStream
      */
-    public function getRecordedAggregateEvents(): AggregateEventCollection;
+    public function getRecordedAggregateEvents(): AggregateEventStream;
 
     /**
      * Remove recorded aggregate events from aggregate root.
@@ -65,9 +65,9 @@ interface AggregateRoot extends BaseAggregateRoot
     public function clearRecordedAggregateEvents(): void;
 
     /**
-     * Collect recorded aggregate events and remove them from aggregate root.
+     * Collect recorded aggregate event stream and remove events from aggregate root.
      *
-     * @return AggregateEventCollection
+     * @return AggregateEventStream
      */
-    public function collectRecordedAggregateEvents(): AggregateEventCollection;
+    public function collectRecordedAggregateEvents(): AggregateEventStream;
 }

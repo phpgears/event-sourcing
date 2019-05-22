@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Gears\EventSourcing\Tests\Aggregate;
 
 use Gears\EventSourcing\Event\AggregateEvent;
-use Gears\EventSourcing\Event\AggregateEventArrayCollection;
+use Gears\EventSourcing\Event\AggregateEventArrayStream;
 use Gears\EventSourcing\Tests\Stub\AbstractAggregateEventStub;
 use Gears\EventSourcing\Tests\Stub\AbstractAggregateRootStub;
 use Gears\Identity\UuidIdentity;
@@ -75,9 +75,9 @@ class AbstractAggregateRootTest extends TestCase
             ]
         );
 
-        $collection = new AggregateEventArrayCollection([$aggregateEvent]);
+        $eventStream = new AggregateEventArrayStream([$aggregateEvent]);
 
-        $aggregateRoot = AbstractAggregateRootStub::reconstituteFromAggregateEvents($collection);
+        $aggregateRoot = AbstractAggregateRootStub::reconstituteFromEventStream($eventStream);
 
         $this->assertEquals($aggregateEvent->getAggregateId(), $aggregateRoot->getIdentity());
         $this->assertEquals($aggregateEvent->getAggregateVersion(), $aggregateRoot->getVersion());
