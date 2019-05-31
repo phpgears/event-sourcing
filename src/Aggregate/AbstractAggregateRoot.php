@@ -69,7 +69,18 @@ abstract class AbstractAggregateRoot implements AggregateRoot
     final public function replayAggregateEventStream(AggregateEventStream $eventStream): void
     {
         foreach ($eventStream as $event) {
-            $this->version = $event->getAggregateVersion();
+            $aggregateVersion = $event->getAggregateVersion();
+
+            if ($this->version + 1 !== $aggregateVersion) {
+                throw new AggregateException(\sprintf(
+                    'Aggregate event %s cannot be replayed, event version is %s and aggregate is %s',
+                    \get_class($event),
+                    $aggregateVersion,
+                    $this->version
+                ));
+            }
+
+            $this->version = $aggregateVersion;
 
             $this->applyAggregateEvent($event);
         }

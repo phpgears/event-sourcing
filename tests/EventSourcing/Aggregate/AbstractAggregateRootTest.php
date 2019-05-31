@@ -64,13 +64,33 @@ class AbstractAggregateRootTest extends TestCase
         $this->assertEquals([$aggregateEvent], \iterator_to_array($recordedAggregateEvents));
     }
 
-    public function testReconstitute(): void
+    /**
+     * @expectedException  \Gears\EventSourcing\Aggregate\Exception\AggregateException
+     * @expectedExceptionMessageRegExp /^Aggregate event .+ cannot be replayed, event version is 10 and aggregate is 0$/
+     */
+    public function testInvalidReconstitute(): void
     {
         $aggregateEvent = AbstractAggregateEventStub::reconstitute(
             [],
             [
                 'aggregateId' => UuidIdentity::fromString('3247cb6e-e9c7-4f3a-9c6c-0dec26a0353f'),
                 'aggregateVersion' => 10,
+                'createdAt' => new \DateTimeImmutable('now'),
+            ]
+        );
+
+        $eventStream = new AggregateEventArrayStream([$aggregateEvent]);
+
+        AbstractAggregateRootStub::reconstituteFromEventStream($eventStream);
+    }
+
+    public function testReconstitute(): void
+    {
+        $aggregateEvent = AbstractAggregateEventStub::reconstitute(
+            [],
+            [
+                'aggregateId' => UuidIdentity::fromString('3247cb6e-e9c7-4f3a-9c6c-0dec26a0353f'),
+                'aggregateVersion' => 1,
                 'createdAt' => new \DateTimeImmutable('now'),
             ]
         );
