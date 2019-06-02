@@ -58,6 +58,10 @@ abstract class AbstractAggregateRoot implements AggregateRoot
         $instance = new static();
         $instance->replayAggregateEventStream($eventStream);
 
+        if ($instance->getVersion()->isEqualTo(new AggregateVersion(0))) {
+            throw new AggregateException('Aggregate cannot be reconstituted from empty event stream');
+        }
+
         return $instance;
     }
 
@@ -95,6 +99,13 @@ abstract class AbstractAggregateRoot implements AggregateRoot
      */
     final protected function recordAggregateEvent(AggregateEvent $event): void
     {
+        if (!$event->getAggregateVersion()->isEqualTo(new AggregateVersion(0))) {
+            throw new AggregateException(\sprintf(
+                'Only new aggregate events can be recorded, event with version %s provided',
+                $event->getAggregateVersion()->getValue()
+            ));
+        }
+
         $this->version = $this->version->getNext();
 
         $this->recordedAggregateEvents[] = $event->withAggregateVersion($this->version);

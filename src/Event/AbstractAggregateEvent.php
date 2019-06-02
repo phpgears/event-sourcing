@@ -77,7 +77,7 @@ abstract class AbstractAggregateEvent implements AggregateEvent
 
         return new static(
             $aggregateId,
-            new AggregateVersion(1),
+            new AggregateVersion(0),
             $payload,
             $timeProvider->getCurrentTime()
         );

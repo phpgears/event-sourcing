@@ -27,12 +27,31 @@ use PHPUnit\Framework\TestCase;
 class AbstractAggregateRootTest extends TestCase
 {
     /**
+     * @expectedException \Gears\EventSourcing\Aggregate\Exception\AggregateException
+     * @expectedExceptionMessage Only new aggregate events can be recorded, event with version 10 provided
+     */
+    public function testInvalidEventApply(): void
+    {
+        $aggregateEvent = $this->getMockBuilder(AggregateEvent::class)->getMock();
+        $aggregateEvent->expects($this->any())
+            ->method('getAggregateVersion')
+            ->will($this->returnValue(new AggregateVersion(10)));
+
+        /* @var AggregateEvent $aggregateEvent */
+
+        AbstractAggregateRootStub::instantiateWithEvent($aggregateEvent);
+    }
+
+    /**
      * @expectedException  \Gears\EventSourcing\Aggregate\Exception\AggregateException
      * @expectedExceptionMessageRegExp /^Aggregate event handling method apply.+ for event .+ does not exist$/
      */
     public function testNoApplyHandler(): void
     {
         $aggregateEvent = $this->getMockBuilder(AggregateEvent::class)->getMock();
+        $aggregateEvent->expects($this->any())
+            ->method('getAggregateVersion')
+            ->will($this->returnValue(new AggregateVersion(0)));
         $aggregateEvent->expects($this->any())
             ->method('withAggregateVersion')
             ->will($this->returnSelf());
@@ -62,14 +81,28 @@ class AbstractAggregateRootTest extends TestCase
         $this->assertCount(0, $aggregateRoot->collectRecordedAggregateEvents());
         $this->assertCount(1, $recordedAggregateEvents);
 
-        $this->assertEquals([$aggregateEvent], \iterator_to_array($recordedAggregateEvents));
+        $this->assertEquals(
+            [$aggregateEvent->withAggregateVersion(new AggregateVersion(1))],
+            \iterator_to_array($recordedAggregateEvents)
+        );
+    }
+
+    /**
+     * @expectedException  \Gears\EventSourcing\Aggregate\Exception\AggregateException
+     * @expectedExceptionMessage Aggregate cannot be reconstituted from empty event stream
+     */
+    public function testReconstituteFromEmptyStream(): void
+    {
+        $eventStream = new AggregateEventArrayStream([]);
+
+        AbstractAggregateRootStub::reconstituteFromEventStream($eventStream);
     }
 
     /**
      * @expectedException  \Gears\EventSourcing\Aggregate\Exception\AggregateException
      * @expectedExceptionMessageRegExp /^Aggregate event .+ cannot be replayed, event version is 10 and aggregate is 0$/
      */
-    public function testInvalidReconstitute(): void
+    public function testReconstituteFromInvalidEvent(): void
     {
         $aggregateEvent = AbstractAggregateEventStub::reconstitute(
             [],
