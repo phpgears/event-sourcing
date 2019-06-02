@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Gears\EventSourcing\Tests\Stub;
 
 use Gears\EventSourcing\Aggregate\AggregateBehaviour;
+use Gears\EventSourcing\Aggregate\AggregateVersion;
 use Gears\Identity\Identity;
 
 /**
@@ -26,10 +27,10 @@ class AggregateBehaviourStub
     /**
      * AggregateBehaviourStub constructor.
      *
-     * @param Identity $aggregateId
-     * @param int      $aggregateVersion
+     * @param Identity         $aggregateId
+     * @param AggregateVersion $aggregateVersion
      */
-    public function __construct(Identity $aggregateId, int $aggregateVersion)
+    public function __construct(Identity $aggregateId, AggregateVersion $aggregateVersion)
     {
         $this->identity = $aggregateId;
         $this->version = $aggregateVersion;

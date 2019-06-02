@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Gears\EventSourcing\Event;
 
 use Gears\Event\Event;
+use Gears\EventSourcing\Aggregate\AggregateVersion;
 use Gears\Identity\Identity;
 
 /**
@@ -31,16 +32,16 @@ interface AggregateEvent extends Event
     /**
      * Get aggregate version.
      *
-     * @return int
+     * @return AggregateVersion
      */
-    public function getAggregateVersion(): int;
+    public function getAggregateVersion(): AggregateVersion;
 
     /**
      * Get event with new aggregate version.
      *
-     * @param int $aggregateVersion
+     * @param AggregateVersion $aggregateVersion
      *
      * @return mixed|self
      */
-    public function withAggregateVersion(int $aggregateVersion);
+    public function withAggregateVersion(AggregateVersion $aggregateVersion);
 }

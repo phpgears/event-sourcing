@@ -32,9 +32,9 @@ interface AggregateRoot extends BaseAggregateRoot
     /**
      * Get aggregate version.
      *
-     * @return int
+     * @return AggregateVersion
      */
-    public function getVersion(): int;
+    public function getVersion(): AggregateVersion;
 
     /**
      * Reconstitute aggregate from a list of aggregate event stream.

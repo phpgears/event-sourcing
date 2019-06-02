@@ -17,6 +17,7 @@ use Gears\DTO\ScalarPayloadBehaviour;
 use Gears\Event\Time\SystemTimeProvider;
 use Gears\Event\Time\TimeProvider;
 use Gears\EventSourcing\Aggregate\AggregateBehaviour;
+use Gears\EventSourcing\Aggregate\AggregateVersion;
 use Gears\Identity\Identity;
 use Gears\Immutability\ImmutabilityBehaviour;
 
@@ -42,11 +43,14 @@ abstract class AbstractEmptyAggregateEvent implements AggregateEvent
      * Prevent aggregate event direct instantiation.
      *
      * @param Identity           $aggregateId
-     * @param int                $aggregateVersion
+     * @param AggregateVersion   $aggregateVersion
      * @param \DateTimeImmutable $createdAt
      */
-    final protected function __construct(Identity $aggregateId, int $aggregateVersion, \DateTimeImmutable $createdAt)
-    {
+    final protected function __construct(
+        Identity $aggregateId,
+        AggregateVersion $aggregateVersion,
+        \DateTimeImmutable $createdAt
+    ) {
         $this->checkImmutability();
 
         $this->identity = $aggregateId;
@@ -68,7 +72,7 @@ abstract class AbstractEmptyAggregateEvent implements AggregateEvent
 
         return new static(
             $aggregateId,
-            1,
+            new AggregateVersion(1),
             $timeProvider->getCurrentTime()
         );
     }
@@ -84,7 +88,7 @@ abstract class AbstractEmptyAggregateEvent implements AggregateEvent
     /**
      * {@inheritdoc}
      */
-    final public function getAggregateVersion(): int
+    final public function getAggregateVersion(): AggregateVersion
     {
         return $this->version;
     }
@@ -92,7 +96,7 @@ abstract class AbstractEmptyAggregateEvent implements AggregateEvent
     /**
      * {@inheritdoc}
      */
-    final public function withAggregateVersion(int $aggregateVersion)
+    final public function withAggregateVersion(AggregateVersion $aggregateVersion)
     {
         /* @var self $self */
         $self = deep_copy($this);

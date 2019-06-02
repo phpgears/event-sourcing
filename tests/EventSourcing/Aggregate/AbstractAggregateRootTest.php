@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Gears\EventSourcing\Tests\Aggregate;
 
+use Gears\EventSourcing\Aggregate\AggregateVersion;
 use Gears\EventSourcing\Event\AggregateEvent;
 use Gears\EventSourcing\Event\AggregateEventArrayStream;
 use Gears\EventSourcing\Tests\Stub\AbstractAggregateEventStub;
@@ -74,7 +75,7 @@ class AbstractAggregateRootTest extends TestCase
             [],
             [
                 'aggregateId' => UuidIdentity::fromString('3247cb6e-e9c7-4f3a-9c6c-0dec26a0353f'),
-                'aggregateVersion' => 10,
+                'aggregateVersion' => new AggregateVersion(10),
                 'createdAt' => new \DateTimeImmutable('now'),
             ]
         );
@@ -90,7 +91,7 @@ class AbstractAggregateRootTest extends TestCase
             [],
             [
                 'aggregateId' => UuidIdentity::fromString('3247cb6e-e9c7-4f3a-9c6c-0dec26a0353f'),
-                'aggregateVersion' => 1,
+                'aggregateVersion' => new AggregateVersion(1),
                 'createdAt' => new \DateTimeImmutable('now'),
             ]
         );

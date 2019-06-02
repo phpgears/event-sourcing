@@ -26,7 +26,7 @@ trait AggregateBehaviour
     private $identity;
 
     /**
-     * @var int
+     * @var AggregateVersion
      */
     private $version;
 
@@ -43,9 +43,9 @@ trait AggregateBehaviour
     /**
      * Get version.
      *
-     * @return int
+     * @return AggregateVersion
      */
-    final public function getVersion(): int
+    final public function getVersion(): AggregateVersion
     {
         return $this->version;
     }

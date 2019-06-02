@@ -37,7 +37,7 @@ abstract class AbstractAggregateRoot implements AggregateRoot
      */
     final protected function __construct()
     {
-        $this->version = 0;
+        $this->version = new AggregateVersion(0);
     }
 
     /**
@@ -71,12 +71,12 @@ abstract class AbstractAggregateRoot implements AggregateRoot
         foreach ($eventStream as $event) {
             $aggregateVersion = $event->getAggregateVersion();
 
-            if ($this->version + 1 !== $aggregateVersion) {
+            if (!$aggregateVersion->isEqualTo($this->version->getNext())) {
                 throw new AggregateException(\sprintf(
                     'Aggregate event %s cannot be replayed, event version is %s and aggregate is %s',
                     \get_class($event),
-                    $aggregateVersion,
-                    $this->version
+                    $aggregateVersion->getValue(),
+                    $this->version->getValue()
                 ));
             }
 
@@ -95,7 +95,7 @@ abstract class AbstractAggregateRoot implements AggregateRoot
      */
     final protected function recordAggregateEvent(AggregateEvent $event): void
     {
-        $this->version++;
+        $this->version = $this->version->getNext();
 
         $this->recordedAggregateEvents[] = $event->withAggregateVersion($this->version);
 
