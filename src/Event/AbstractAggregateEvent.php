@@ -16,28 +16,18 @@ namespace Gears\EventSourcing\Event;
 use Gears\DTO\ScalarPayloadBehaviour;
 use Gears\Event\Time\SystemTimeProvider;
 use Gears\Event\Time\TimeProvider;
-use Gears\EventSourcing\Aggregate\AggregateBehaviour;
 use Gears\EventSourcing\Aggregate\AggregateVersion;
 use Gears\Identity\Identity;
 use Gears\Immutability\ImmutabilityBehaviour;
-
-use function DeepCopy\deep_copy;
 
 /**
  * Abstract immutable aggregate event.
  */
 abstract class AbstractAggregateEvent implements AggregateEvent
 {
-    use ImmutabilityBehaviour, ScalarPayloadBehaviour, AggregateBehaviour {
+    use ImmutabilityBehaviour, ScalarPayloadBehaviour, AggregateEventBehaviour {
         ScalarPayloadBehaviour::__call insteadof ImmutabilityBehaviour;
-        AggregateBehaviour::getIdentity as private;
-        AggregateBehaviour::getVersion as private;
     }
-
-    /**
-     * @var \DateTimeImmutable
-     */
-    private $createdAt;
 
     /**
      * Prevent aggregate event direct instantiation.
@@ -81,42 +71,6 @@ abstract class AbstractAggregateEvent implements AggregateEvent
             $payload,
             $timeProvider->getCurrentTime()
         );
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    final public function getAggregateId(): Identity
-    {
-        return $this->identity;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    final public function getAggregateVersion(): AggregateVersion
-    {
-        return $this->version;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    final public function withAggregateVersion(AggregateVersion $aggregateVersion)
-    {
-        /* @var self $self */
-        $self = deep_copy($this);
-        $self->version = $aggregateVersion;
-
-        return $self;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    final public function getCreatedAt(): \DateTimeImmutable
-    {
-        return $this->createdAt;
     }
 
     /**

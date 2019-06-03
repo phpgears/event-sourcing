@@ -28,7 +28,7 @@ class AbstractAggregateRootTest extends TestCase
 {
     /**
      * @expectedException \Gears\EventSourcing\Aggregate\Exception\AggregateException
-     * @expectedExceptionMessage Only new aggregate events can be recorded, event with version 10 provided
+     * @expectedExceptionMessageRegExp /^Only new aggregate events can be recorded, event .+ with version 10 given/
      */
     public function testInvalidEventApply(): void
     {

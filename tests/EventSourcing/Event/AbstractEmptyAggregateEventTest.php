@@ -14,20 +14,19 @@ declare(strict_types=1);
 namespace Gears\EventSourcing\Tests\Event;
 
 use Gears\EventSourcing\Aggregate\AggregateVersion;
-use Gears\EventSourcing\Tests\Stub\AbstractAggregateEventStub;
+use Gears\EventSourcing\Tests\Stub\AbstractEmptyAggregateEventStub;
 use Gears\Identity\UuidIdentity;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Abstract aggregate event test.
+ * Abstract empty aggregate event test.
  */
-class AbstractAggregateEventTest extends TestCase
+class AbstractEmptyAggregateEventTest extends TestCase
 {
     public function testCreation(): void
     {
-        $aggregateEvent = AbstractAggregateEventStub::instance(
-            UuidIdentity::fromString('3247cb6e-e9c7-4f3a-9c6c-0dec26a0353f'),
-            []
+        $aggregateEvent = AbstractEmptyAggregateEventStub::instance(
+            UuidIdentity::fromString('3247cb6e-e9c7-4f3a-9c6c-0dec26a0353f')
         );
 
         $this->assertLessThanOrEqual(new \DateTimeImmutable('now'), $aggregateEvent->getCreatedAt());
@@ -38,7 +37,7 @@ class AbstractAggregateEventTest extends TestCase
         $identity = UuidIdentity::fromString('3247cb6e-e9c7-4f3a-9c6c-0dec26a0353f');
         $now = new \DateTimeImmutable('now');
 
-        $aggregateEvent = AbstractAggregateEventStub::reconstitute(
+        $aggregateEvent = AbstractEmptyAggregateEventStub::reconstitute(
             [],
             [
                 'aggregateId' => $identity,
@@ -58,9 +57,8 @@ class AbstractAggregateEventTest extends TestCase
      */
     public function testNoNewVersion(): void
     {
-        $aggregateEvent = AbstractAggregateEventStub::instance(
-            UuidIdentity::fromString('3247cb6e-e9c7-4f3a-9c6c-0dec26a0353f'),
-            []
+        $aggregateEvent = AbstractEmptyAggregateEventStub::instance(
+            UuidIdentity::fromString('3247cb6e-e9c7-4f3a-9c6c-0dec26a0353f')
         );
 
         $newAggregateEvent = $aggregateEvent->withAggregateVersion(new AggregateVersion(10));
@@ -76,9 +74,8 @@ class AbstractAggregateEventTest extends TestCase
      */
     public function testNoNewVersionZero(): void
     {
-        $aggregateEvent = AbstractAggregateEventStub::instance(
-            UuidIdentity::fromString('3247cb6e-e9c7-4f3a-9c6c-0dec26a0353f'),
-            []
+        $aggregateEvent = AbstractEmptyAggregateEventStub::instance(
+            UuidIdentity::fromString('3247cb6e-e9c7-4f3a-9c6c-0dec26a0353f')
         );
 
         $aggregateEvent->withAggregateVersion(new AggregateVersion(0));
@@ -86,9 +83,8 @@ class AbstractAggregateEventTest extends TestCase
 
     public function testNewVersion(): void
     {
-        $aggregateEvent = AbstractAggregateEventStub::instance(
-            UuidIdentity::fromString('3247cb6e-e9c7-4f3a-9c6c-0dec26a0353f'),
-            []
+        $aggregateEvent = AbstractEmptyAggregateEventStub::instance(
+            UuidIdentity::fromString('3247cb6e-e9c7-4f3a-9c6c-0dec26a0353f')
         );
 
         $newAggregateEvent = $aggregateEvent->withAggregateVersion(new AggregateVersion(10));

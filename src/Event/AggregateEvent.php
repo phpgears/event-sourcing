@@ -41,6 +41,8 @@ interface AggregateEvent extends Event
      *
      * @param AggregateVersion $aggregateVersion
      *
+     * @throws \Gears\Event\Exception\EventException
+     *
      * @return mixed|self
      */
     public function withAggregateVersion(AggregateVersion $aggregateVersion);

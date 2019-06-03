@@ -101,7 +101,8 @@ abstract class AbstractAggregateRoot implements AggregateRoot
     {
         if (!$event->getAggregateVersion()->isEqualTo(new AggregateVersion(0))) {
             throw new AggregateException(\sprintf(
-                'Only new aggregate events can be recorded, event with version %s provided',
+                'Only new aggregate events can be recorded, event %s with version %s given',
+                \get_class($event),
                 $event->getAggregateVersion()->getValue()
             ));
         }
