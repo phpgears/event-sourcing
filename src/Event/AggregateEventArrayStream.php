@@ -87,4 +87,12 @@ final class AggregateEventArrayStream implements AggregateEventStream
     {
         \reset($this->events);
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function count(): int
+    {
+        return \count($this->events);
+    }
 }

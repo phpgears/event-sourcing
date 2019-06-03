@@ -16,7 +16,7 @@ namespace Gears\EventSourcing\Event;
 /**
  * Aggregate event stream.
  */
-interface AggregateEventStream extends \Iterator
+interface AggregateEventStream extends \Iterator, \Countable
 {
     /**
      * {@inheritdoc}

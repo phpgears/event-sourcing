@@ -85,4 +85,27 @@ final class AggregateEventIteratorStream implements AggregateEventStream
     {
         $this->iterator->rewind();
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function count(): int
+    {
+        $currentKey = $this->iterator->key();
+        $this->iterator->rewind();
+
+        $count = 0;
+        while ($this->iterator->valid()) {
+            $count++;
+
+            $this->iterator->next();
+        }
+
+        $this->iterator->rewind();
+        while ($this->iterator->key() !== $currentKey) {
+            $this->iterator->next();
+        }
+
+        return $count;
+    }
 }

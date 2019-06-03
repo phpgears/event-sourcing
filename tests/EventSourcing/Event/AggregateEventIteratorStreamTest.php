@@ -43,6 +43,11 @@ class AggregateEventIteratorStreamTest extends TestCase
         ];
         $eventStream = new AggregateEventIteratorStream(new \ArrayIterator($events));
 
+        $eventStream->next();
+        $currentKey = $eventStream->key();
+        $this->assertCount(2, $eventStream);
+        $this->assertEquals($currentKey, $eventStream->key());
+
         foreach ($eventStream as $event) {
             $this->assertInstanceOf(AggregateEvent::class, $event);
         }

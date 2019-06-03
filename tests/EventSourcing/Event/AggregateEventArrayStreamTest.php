@@ -43,6 +43,8 @@ class AggregateEventArrayStreamTest extends TestCase
         ];
         $eventStream = new AggregateEventArrayStream($events);
 
+        $this->assertCount(2, $eventStream);
+
         foreach ($eventStream as $event) {
             $this->assertInstanceOf(AggregateEvent::class, $event);
         }
