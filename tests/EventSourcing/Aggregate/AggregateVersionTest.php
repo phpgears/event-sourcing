@@ -47,6 +47,16 @@ class AggregateVersionTest extends TestCase
         $this->assertNotSame($version, $next);
     }
 
+    public function testGetPrevious(): void
+    {
+        $version = new AggregateVersion(10);
+
+        $previous = $version->getPrevious();
+
+        $this->assertEquals(9, $previous->getValue());
+        $this->assertNotSame($version, $previous);
+    }
+
     public function testEquality(): void
     {
         $version = new AggregateVersion(10);

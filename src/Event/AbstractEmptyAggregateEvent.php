@@ -61,8 +61,8 @@ abstract class AbstractEmptyAggregateEvent implements AggregateEvent
     /**
      * Instantiate new aggregate event.
      *
-     * @param Identity     $aggregateId
-     * @param TimeProvider $timeProvider
+     * @param Identity          $aggregateId
+     * @param TimeProvider|null $timeProvider
      *
      * @return mixed|self
      */

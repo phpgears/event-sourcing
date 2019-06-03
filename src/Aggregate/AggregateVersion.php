@@ -49,7 +49,7 @@ final class AggregateVersion
     /**
      * Check equality.
      *
-     * @param AggregateVersion $version
+     * @param self $version
      *
      * @return bool
      */
@@ -59,7 +59,7 @@ final class AggregateVersion
     }
 
     /**
-     * Get next.
+     * Get next version.
      *
      * @return self
      */
@@ -67,6 +67,19 @@ final class AggregateVersion
     {
         $clone = clone $this;
         $clone->value = $this->value + 1;
+
+        return $clone;
+    }
+
+    /**
+     * Get previous version.
+     *
+     * @return AggregateVersion
+     */
+    public function getPrevious(): self
+    {
+        $clone = clone $this;
+        $clone->value = $this->value - 1;
 
         return $clone;
     }

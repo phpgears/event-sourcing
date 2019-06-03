@@ -67,7 +67,7 @@ abstract class AbstractAggregateEvent implements AggregateEvent
      *
      * @param Identity             $aggregateId
      * @param array<string, mixed> $payload
-     * @param TimeProvider         $timeProvider
+     * @param TimeProvider|null    $timeProvider
      *
      * @return mixed|self
      */
