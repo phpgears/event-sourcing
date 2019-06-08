@@ -13,21 +13,17 @@ declare(strict_types=1);
 
 namespace Gears\EventSourcing\Event;
 
-use Gears\DTO\ScalarPayloadBehaviour;
 use Gears\Event\Time\SystemTimeProvider;
 use Gears\Event\Time\TimeProvider;
 use Gears\EventSourcing\Aggregate\AggregateVersion;
 use Gears\Identity\Identity;
-use Gears\Immutability\ImmutabilityBehaviour;
 
 /**
  * Abstract immutable aggregate event.
  */
 abstract class AbstractAggregateEvent implements AggregateEvent
 {
-    use ImmutabilityBehaviour, ScalarPayloadBehaviour, AggregateEventBehaviour {
-        ScalarPayloadBehaviour::__call insteadof ImmutabilityBehaviour;
-    }
+    use AggregateEventBehaviour;
 
     /**
      * Prevent aggregate event direct instantiation.
@@ -35,21 +31,23 @@ abstract class AbstractAggregateEvent implements AggregateEvent
      * @param Identity             $aggregateId
      * @param AggregateVersion     $aggregateVersion
      * @param array<string, mixed> $payload
+     * @param array<string, mixed> $metadata
      * @param \DateTimeImmutable   $createdAt
      */
     final protected function __construct(
         Identity $aggregateId,
         AggregateVersion $aggregateVersion,
         array $payload,
+        array $metadata,
         \DateTimeImmutable $createdAt
     ) {
         $this->checkImmutability();
 
         $this->identity = $aggregateId;
         $this->version = $aggregateVersion;
-        $this->createdAt = $createdAt->setTimezone(new \DateTimeZone('UTC'));
-
         $this->setPayload($payload);
+        $this->setMetadata($metadata);
+        $this->createdAt = $createdAt->setTimezone(new \DateTimeZone('UTC'));
     }
 
     /**
@@ -69,6 +67,7 @@ abstract class AbstractAggregateEvent implements AggregateEvent
             $aggregateId,
             new AggregateVersion(0),
             $payload,
+            [],
             $timeProvider->getCurrentTime()
         );
     }
@@ -84,6 +83,7 @@ abstract class AbstractAggregateEvent implements AggregateEvent
             $attributes['aggregateId'],
             $attributes['aggregateVersion'],
             $payload,
+            $attributes['metadata'],
             $attributes['createdAt']
         );
     }

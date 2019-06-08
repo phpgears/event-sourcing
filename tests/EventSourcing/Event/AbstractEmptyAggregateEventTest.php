@@ -35,6 +35,7 @@ class AbstractEmptyAggregateEventTest extends TestCase
     public function testReconstitution(): void
     {
         $identity = UuidIdentity::fromString('3247cb6e-e9c7-4f3a-9c6c-0dec26a0353f');
+        $metadata = ['userId' => '123456'];
         $now = new \DateTimeImmutable('now');
 
         $aggregateEvent = AbstractEmptyAggregateEventStub::reconstitute(
@@ -42,13 +43,29 @@ class AbstractEmptyAggregateEventTest extends TestCase
             [
                 'aggregateId' => $identity,
                 'aggregateVersion' => new AggregateVersion(10),
+                'metadata' => $metadata,
                 'createdAt' => $now,
             ]
         );
 
         $this->assertSame($identity, $aggregateEvent->getAggregateId());
         $this->assertSame(10, $aggregateEvent->getAggregateVersion()->getValue());
+        $this->assertEquals($metadata, $aggregateEvent->getMetadata());
         $this->assertEquals($now, $aggregateEvent->getCreatedAt());
+    }
+
+    public function testMetadata(): void
+    {
+        $aggregateEvent = AbstractEmptyAggregateEventStub::instance(
+            UuidIdentity::fromString('3247cb6e-e9c7-4f3a-9c6c-0dec26a0353f')
+        );
+
+        $this->assertEmpty($aggregateEvent->getMetadata());
+
+        $newAggregateEvent = $aggregateEvent->withMetadata(['userId' => '123456']);
+
+        $this->assertEmpty($aggregateEvent->getMetadata());
+        $this->assertEquals(['userId' => '123456'], $newAggregateEvent->getMetadata());
     }
 
     /**

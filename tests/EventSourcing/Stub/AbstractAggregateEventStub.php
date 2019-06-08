@@ -24,12 +24,12 @@ class AbstractAggregateEventStub extends AbstractAggregateEvent
     /**
      * Instantiate event.
      *
-     * @param Identity $aggregateId
-     * @param array    $payload
+     * @param Identity   $aggregateId
+     * @param array|null $payload
      *
      * @return self
      */
-    public static function instance(Identity $aggregateId, array $payload): self
+    public static function instance(Identity $aggregateId, ?array $payload = []): self
     {
         return static::occurred($aggregateId, $payload);
     }

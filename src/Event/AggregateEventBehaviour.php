@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Gears\EventSourcing\Event;
 
+use Gears\Event\EventBehaviour;
 use Gears\Event\Exception\EventException;
 use Gears\EventSourcing\Aggregate\AggregateBehaviour;
 use Gears\EventSourcing\Aggregate\AggregateVersion;
@@ -21,22 +22,19 @@ use Gears\Identity\Identity;
 use function DeepCopy\deep_copy;
 
 /**
- * Abstract immutable aggregate event.
+ * Aggregate event behaviour.
  */
 trait AggregateEventBehaviour
 {
-    use AggregateBehaviour {
+    use EventBehaviour, AggregateBehaviour {
         AggregateBehaviour::getIdentity as private;
         AggregateBehaviour::getVersion as private;
     }
 
     /**
-     * @var \DateTimeImmutable
-     */
-    private $createdAt;
-
-    /**
-     * {@inheritdoc}
+     * Get aggregate id.
+     *
+     * @return Identity
      */
     final public function getAggregateId(): Identity
     {
@@ -44,7 +42,9 @@ trait AggregateEventBehaviour
     }
 
     /**
-     * {@inheritdoc}
+     * Get aggregate version.
+     *
+     * @return AggregateVersion
      */
     final public function getAggregateVersion(): AggregateVersion
     {
@@ -52,7 +52,13 @@ trait AggregateEventBehaviour
     }
 
     /**
-     * {@inheritdoc}
+     * Get event with new aggregate version.
+     *
+     * @param AggregateVersion $aggregateVersion
+     *
+     * @throws \Gears\Event\Exception\EventException
+     *
+     * @return mixed|self
      */
     final public function withAggregateVersion(AggregateVersion $aggregateVersion)
     {
@@ -76,13 +82,5 @@ trait AggregateEventBehaviour
         $self->version = $aggregateVersion;
 
         return $self;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    final public function getCreatedAt(): \DateTimeImmutable
-    {
-        return $this->createdAt;
     }
 }

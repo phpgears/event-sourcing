@@ -13,38 +13,37 @@ declare(strict_types=1);
 
 namespace Gears\EventSourcing\Event;
 
-use Gears\DTO\ScalarPayloadBehaviour;
 use Gears\Event\Time\SystemTimeProvider;
 use Gears\Event\Time\TimeProvider;
 use Gears\EventSourcing\Aggregate\AggregateVersion;
 use Gears\Identity\Identity;
-use Gears\Immutability\ImmutabilityBehaviour;
 
 /**
  * Abstract empty immutable aggregate event.
  */
 abstract class AbstractEmptyAggregateEvent implements AggregateEvent
 {
-    use ImmutabilityBehaviour, ScalarPayloadBehaviour, AggregateEventBehaviour {
-        ScalarPayloadBehaviour::__call insteadof ImmutabilityBehaviour;
-    }
+    use AggregateEventBehaviour;
 
     /**
      * Prevent aggregate event direct instantiation.
      *
-     * @param Identity           $aggregateId
-     * @param AggregateVersion   $aggregateVersion
-     * @param \DateTimeImmutable $createdAt
+     * @param Identity             $aggregateId
+     * @param AggregateVersion     $aggregateVersion
+     * @param array<string, mixed> $metadata
+     * @param \DateTimeImmutable   $createdAt
      */
     final protected function __construct(
         Identity $aggregateId,
         AggregateVersion $aggregateVersion,
+        array $metadata,
         \DateTimeImmutable $createdAt
     ) {
         $this->checkImmutability();
 
         $this->identity = $aggregateId;
         $this->version = $aggregateVersion;
+        $this->setMetadata($metadata);
         $this->createdAt = $createdAt->setTimezone(new \DateTimeZone('UTC'));
     }
 
@@ -63,6 +62,7 @@ abstract class AbstractEmptyAggregateEvent implements AggregateEvent
         return new static(
             $aggregateId,
             new AggregateVersion(0),
+            [],
             $timeProvider->getCurrentTime()
         );
     }
@@ -79,6 +79,7 @@ abstract class AbstractEmptyAggregateEvent implements AggregateEvent
         return new static(
             $attributes['aggregateId'],
             $attributes['aggregateVersion'],
+            $attributes['metadata'],
             $attributes['createdAt']
         );
     }
