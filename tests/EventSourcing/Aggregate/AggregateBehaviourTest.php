@@ -29,7 +29,7 @@ class AggregateBehaviourTest extends TestCase
 
         $stub = new AggregateBehaviourStub($identity, new AggregateVersion(10));
 
-        $this->assertSame($identity, $stub->getIdentity());
-        $this->assertSame(10, $stub->getVersion()->getValue());
+        static::assertSame($identity, $stub->getIdentity());
+        static::assertSame(10, $stub->getVersion()->getValue());
     }
 }

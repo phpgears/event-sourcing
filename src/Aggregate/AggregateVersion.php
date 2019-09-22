@@ -30,7 +30,7 @@ final class AggregateVersion
     public function __construct(int $value)
     {
         if ($value < 0) {
-            throw new AggregateException(\sprintf('Version value should be higher than 0, %s given', $value));
+            throw new AggregateException(\sprintf('Version value should be higher than 0, "%s" given', $value));
         }
 
         $this->value = $value;

@@ -64,7 +64,7 @@ trait AggregateEventBehaviour
     {
         if (!$this->version->isEqualTo(new AggregateVersion(0))) {
             throw new EventException(\sprintf(
-                'Only new events can get a new version, event %s already at version %s',
+                'Only new events can get a new version, event "%s" already at version "%s"',
                 \get_class($this),
                 $this->version->getValue()
             ));
@@ -72,7 +72,7 @@ trait AggregateEventBehaviour
 
         if ($aggregateVersion->isEqualTo(new AggregateVersion(0))) {
             throw new EventException(\sprintf(
-                'Aggregate events can not get version 0 set, version 0 given to event %s',
+                'Aggregate events can not get version 0 set, version "0" given to event "%s"',
                 \get_class($this)
             ));
         }

@@ -16,27 +16,30 @@ namespace Gears\EventSourcing\Aggregate;
 use Gears\Aggregate\EventBehaviour;
 use Gears\EventSourcing\Aggregate\Exception\AggregateException;
 use Gears\EventSourcing\Event\AggregateEvent;
-use Gears\EventSourcing\Event\AggregateEventArrayStream;
+use Gears\EventSourcing\Event\AggregateEventIteratorStream;
 use Gears\EventSourcing\Event\AggregateEventStream;
 use Gears\Identity\Identity;
 
 /**
  * Abstract aggregate root class.
+ *
+ * @SuppressWarnings(PHPMD.LongVariable)
  */
 abstract class AbstractAggregateRoot implements AggregateRoot
 {
     use AggregateBehaviour, EventBehaviour;
 
     /**
-     * @var AggregateEvent[]
+     * @var \ArrayObject
      */
-    private $recordedAggregateEvents = [];
+    private $recordedAggregateEvents;
 
     /**
      * Prevent aggregate root direct instantiation.
      */
     final protected function __construct()
     {
+        $this->recordedAggregateEvents = new \ArrayObject();
         $this->version = new AggregateVersion(0);
     }
 
@@ -77,7 +80,7 @@ abstract class AbstractAggregateRoot implements AggregateRoot
 
             if (!$aggregateVersion->isEqualTo($this->version->getNext())) {
                 throw new AggregateException(\sprintf(
-                    'Aggregate event %s cannot be replayed, event version is %s and aggregate is %s',
+                    'Aggregate event "%s" cannot be replayed, event version is "%s" and aggregate is "%s"',
                     \get_class($event),
                     $aggregateVersion->getValue(),
                     $this->version->getValue()
@@ -101,7 +104,7 @@ abstract class AbstractAggregateRoot implements AggregateRoot
     {
         if (!$event->getAggregateVersion()->isEqualTo(new AggregateVersion(0))) {
             throw new AggregateException(\sprintf(
-                'Only new aggregate events can be recorded, event %s with version %s given',
+                'Only new aggregate events can be recorded, event "%s" with version "%s" given',
                 \get_class($event),
                 $event->getAggregateVersion()->getValue()
             ));
@@ -109,7 +112,7 @@ abstract class AbstractAggregateRoot implements AggregateRoot
 
         $this->version = $this->version->getNext();
 
-        $this->recordedAggregateEvents[] = $event->withAggregateVersion($this->version);
+        $this->recordedAggregateEvents->append($event->withAggregateVersion($this->version));
 
         $this->applyAggregateEvent($event);
     }
@@ -127,7 +130,7 @@ abstract class AbstractAggregateRoot implements AggregateRoot
 
         if (!\method_exists($this, $method)) {
             throw new AggregateException(\sprintf(
-                'Aggregate event handling method %s for event %s does not exist',
+                'Aggregate event handling method "%s" for event "%s" does not exist',
                 $method,
                 \get_class($event)
             ));
@@ -157,7 +160,7 @@ abstract class AbstractAggregateRoot implements AggregateRoot
      */
     final public function getRecordedAggregateEvents(): AggregateEventStream
     {
-        return new AggregateEventArrayStream($this->recordedAggregateEvents);
+        return new AggregateEventIteratorStream($this->recordedAggregateEvents->getIterator());
     }
 
     /**
@@ -165,7 +168,7 @@ abstract class AbstractAggregateRoot implements AggregateRoot
      */
     final public function clearRecordedAggregateEvents(): void
     {
-        $this->recordedAggregateEvents = [];
+        $this->recordedAggregateEvents = new \ArrayObject();
     }
 
     /**
@@ -173,9 +176,9 @@ abstract class AbstractAggregateRoot implements AggregateRoot
      */
     final public function collectRecordedAggregateEvents(): AggregateEventStream
     {
-        $recordedEvents = new AggregateEventArrayStream($this->recordedAggregateEvents);
+        $recordedEvents = new AggregateEventIteratorStream($this->recordedAggregateEvents->getIterator());
 
-        $this->recordedAggregateEvents = [];
+        $this->recordedAggregateEvents = new \ArrayObject();
 
         return $recordedEvents;
     }

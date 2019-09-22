@@ -34,7 +34,7 @@ final class AggregateEventArrayStream implements AggregateEventStream
         foreach ($events as $event) {
             if (!$event instanceof AggregateEvent) {
                 throw new InvalidAggregateEventException(\sprintf(
-                    'Aggregate event stream only accepts %s, %s given',
+                    'Aggregate event stream only accepts "%s", "%s" given',
                     AggregateEvent::class,
                     \is_object($event) ? \get_class($event) : \gettype($event)
                 ));

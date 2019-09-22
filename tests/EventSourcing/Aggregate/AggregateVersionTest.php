@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Gears\EventSourcing\Tests\Aggregate;
 
 use Gears\EventSourcing\Aggregate\AggregateVersion;
+use Gears\EventSourcing\Aggregate\Exception\AggregateException;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -21,12 +22,11 @@ use PHPUnit\Framework\TestCase;
  */
 class AggregateVersionTest extends TestCase
 {
-    /**
-     * @expectedException \Gears\EventSourcing\Aggregate\Exception\AggregateException
-     * @expectedExceptionMessage Version value should be higher than 0, -1 given
-     */
     public function testInvalidValue(): void
     {
+        $this->expectException(AggregateException::class);
+        $this->expectExceptionMessage('Version value should be higher than 0, "-1" given');
+
         new AggregateVersion(-1);
     }
 
@@ -34,7 +34,7 @@ class AggregateVersionTest extends TestCase
     {
         $version = new AggregateVersion(10);
 
-        $this->assertEquals(10, $version->getValue());
+        static::assertEquals(10, $version->getValue());
     }
 
     public function testGetNext(): void
@@ -43,8 +43,8 @@ class AggregateVersionTest extends TestCase
 
         $next = $version->getNext();
 
-        $this->assertEquals(11, $next->getValue());
-        $this->assertNotSame($version, $next);
+        static::assertEquals(11, $next->getValue());
+        static::assertNotSame($version, $next);
     }
 
     public function testGetPrevious(): void
@@ -53,15 +53,15 @@ class AggregateVersionTest extends TestCase
 
         $previous = $version->getPrevious();
 
-        $this->assertEquals(9, $previous->getValue());
-        $this->assertNotSame($version, $previous);
+        static::assertEquals(9, $previous->getValue());
+        static::assertNotSame($version, $previous);
     }
 
     public function testEquality(): void
     {
         $version = new AggregateVersion(10);
 
-        $this->assertTrue($version->isEqualTo(new AggregateVersion(10)));
-        $this->assertFalse($version->isEqualTo(new AggregateVersion(11)));
+        static::assertTrue($version->isEqualTo(new AggregateVersion(10)));
+        static::assertFalse($version->isEqualTo(new AggregateVersion(11)));
     }
 }

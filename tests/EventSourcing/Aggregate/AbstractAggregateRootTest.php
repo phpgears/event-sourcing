@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Gears\EventSourcing\Tests\Aggregate;
 
 use Gears\EventSourcing\Aggregate\AggregateVersion;
+use Gears\EventSourcing\Aggregate\Exception\AggregateException;
 use Gears\EventSourcing\Event\AggregateEvent;
 use Gears\EventSourcing\Event\AggregateEventArrayStream;
 use Gears\EventSourcing\Tests\Stub\AbstractAggregateEventStub;
@@ -26,35 +27,37 @@ use PHPUnit\Framework\TestCase;
  */
 class AbstractAggregateRootTest extends TestCase
 {
-    /**
-     * @expectedException \Gears\EventSourcing\Aggregate\Exception\AggregateException
-     * @expectedExceptionMessageRegExp /^Only new aggregate events can be recorded, event .+ with version 10 given/
-     */
     public function testInvalidEventApply(): void
     {
+        $this->expectException(AggregateException::class);
+        $this->expectExceptionMessageRegExp(
+            '/^Only new aggregate events can be recorded, event .+ with version "10" given$/'
+        );
+
         $aggregateEvent = $this->getMockBuilder(AggregateEvent::class)->getMock();
-        $aggregateEvent->expects($this->any())
+        $aggregateEvent->expects(static::any())
             ->method('getAggregateVersion')
-            ->will($this->returnValue(new AggregateVersion(10)));
+            ->will(static::returnValue(new AggregateVersion(10)));
 
         /* @var AggregateEvent $aggregateEvent */
 
         AbstractAggregateRootStub::instantiateWithEvent($aggregateEvent);
     }
 
-    /**
-     * @expectedException  \Gears\EventSourcing\Aggregate\Exception\AggregateException
-     * @expectedExceptionMessageRegExp /^Aggregate event handling method apply.+ for event .+ does not exist$/
-     */
     public function testNoApplyHandler(): void
     {
+        $this->expectException(AggregateException::class);
+        $this->expectExceptionMessageRegExp(
+            '/^Aggregate event handling method "apply.+" for event ".+" does not exist$/'
+        );
+
         $aggregateEvent = $this->getMockBuilder(AggregateEvent::class)->getMock();
-        $aggregateEvent->expects($this->any())
+        $aggregateEvent->expects(static::any())
             ->method('getAggregateVersion')
-            ->will($this->returnValue(new AggregateVersion(0)));
-        $aggregateEvent->expects($this->any())
+            ->will(static::returnValue(new AggregateVersion(0)));
+        $aggregateEvent->expects(static::any())
             ->method('withAggregateVersion')
-            ->will($this->returnSelf());
+            ->will(static::returnSelf());
 
         /* @var AggregateEvent $aggregateEvent */
 
@@ -69,40 +72,40 @@ class AbstractAggregateRootTest extends TestCase
 
         $aggregateRoot = AbstractAggregateRootStub::instantiateWithEvent($aggregateEvent);
 
-        $this->assertCount(1, $aggregateRoot->getRecordedAggregateEvents());
+        static::assertCount(1, $aggregateRoot->getRecordedAggregateEvents());
         $aggregateRoot->clearRecordedAggregateEvents();
-        $this->assertCount(0, $aggregateRoot->getRecordedAggregateEvents());
+        static::assertCount(0, $aggregateRoot->getRecordedAggregateEvents());
 
         $aggregateRoot = AbstractAggregateRootStub::instantiateWithEvent($aggregateEvent);
 
-        $this->assertCount(1, $aggregateRoot->getRecordedAggregateEvents());
+        static::assertCount(1, $aggregateRoot->getRecordedAggregateEvents());
         $recordedAggregateEvents = $aggregateRoot->collectRecordedAggregateEvents();
-        $this->assertCount(0, $aggregateRoot->collectRecordedAggregateEvents());
-        $this->assertCount(1, $recordedAggregateEvents);
+        static::assertCount(0, $aggregateRoot->collectRecordedAggregateEvents());
+        static::assertCount(1, $recordedAggregateEvents);
 
-        $this->assertEquals(
+        static::assertEquals(
             [$aggregateEvent->withAggregateVersion(new AggregateVersion(1))],
             \iterator_to_array($recordedAggregateEvents)
         );
     }
 
-    /**
-     * @expectedException  \Gears\EventSourcing\Aggregate\Exception\AggregateException
-     * @expectedExceptionMessage Aggregate cannot be reconstituted from empty event stream
-     */
     public function testReconstituteFromEmptyStream(): void
     {
+        $this->expectException(AggregateException::class);
+        $this->expectExceptionMessage('Aggregate cannot be reconstituted from empty event stream');
+
         $eventStream = new AggregateEventArrayStream([]);
 
         AbstractAggregateRootStub::reconstituteFromEventStream($eventStream);
     }
 
-    /**
-     * @expectedException  \Gears\EventSourcing\Aggregate\Exception\AggregateException
-     * @expectedExceptionMessageRegExp /^Aggregate event .+ cannot be replayed, event version is 10 and aggregate is 0$/
-     */
     public function testReconstituteFromInvalidEvent(): void
     {
+        $this->expectException(AggregateException::class);
+        $this->expectExceptionMessageRegExp(
+            '/^Aggregate event .+ cannot be replayed, event version is "10" and aggregate is "0"$/'
+        );
+
         $aggregateEvent = AbstractAggregateEventStub::reconstitute(
             [],
             [
@@ -134,8 +137,8 @@ class AbstractAggregateRootTest extends TestCase
 
         $aggregateRoot = AbstractAggregateRootStub::reconstituteFromEventStream($eventStream);
 
-        $this->assertEquals($aggregateEvent->getAggregateId(), $aggregateRoot->getIdentity());
-        $this->assertEquals($aggregateEvent->getAggregateVersion(), $aggregateRoot->getVersion());
-        $this->assertCount(0, $aggregateRoot->collectRecordedAggregateEvents());
+        static::assertEquals($aggregateEvent->getAggregateId(), $aggregateRoot->getIdentity());
+        static::assertEquals($aggregateEvent->getAggregateVersion(), $aggregateRoot->getVersion());
+        static::assertCount(0, $aggregateRoot->collectRecordedAggregateEvents());
     }
 }

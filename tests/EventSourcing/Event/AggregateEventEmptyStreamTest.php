@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Gears\EventSourcing\Tests\Event;
 
 use Gears\EventSourcing\Event\AggregateEventEmptyStream;
+use Gears\EventSourcing\Event\Exception\AggregateEventStreamException;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -21,12 +22,11 @@ use PHPUnit\Framework\TestCase;
  */
 class AggregateEventEmptyStreamTest extends TestCase
 {
-    /**
-     * @expectedException \Gears\EventSourcing\Event\Exception\AggregateEventStreamException
-     * @expectedExceptionMessage Current method must not be called on AggregateEventEmptyStream
-     */
     public function testInvalidTypeStream(): void
     {
+        $this->expectException(AggregateEventStreamException::class);
+        $this->expectExceptionMessage('Current method must not be called on AggregateEventEmptyStream');
+
         (new AggregateEventEmptyStream())->current();
     }
 
@@ -37,7 +37,7 @@ class AggregateEventEmptyStreamTest extends TestCase
         $eventStream->rewind();
         $eventStream->next();
 
-        $this->assertCount(0, $eventStream);
-        $this->assertFalse($eventStream->valid());
+        static::assertCount(0, $eventStream);
+        static::assertFalse($eventStream->valid());
     }
 }

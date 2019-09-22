@@ -15,6 +15,7 @@ namespace Gears\EventSourcing\Tests\Event;
 
 use Gears\EventSourcing\Event\AggregateEvent;
 use Gears\EventSourcing\Event\AggregateEventIteratorStream;
+use Gears\EventSourcing\Event\Exception\InvalidAggregateEventException;
 use Gears\EventSourcing\Tests\Stub\AbstractEmptyAggregateEventStub;
 use Gears\Identity\UuidIdentity;
 use PHPUnit\Framework\TestCase;
@@ -24,12 +25,11 @@ use PHPUnit\Framework\TestCase;
  */
 class AggregateEventIteratorStreamTest extends TestCase
 {
-    /**
-     * @expectedException \Gears\EventSourcing\Event\Exception\InvalidAggregateEventException
-     * @expectedExceptionMessageRegExp /Aggregate event stream only accepts .+, string given/
-     */
     public function testInvalidTypeStream(): void
     {
+        $this->expectException(InvalidAggregateEventException::class);
+        $this->expectExceptionMessageRegExp('/^Aggregate event stream only accepts ".+", "string" given$/');
+
         (new AggregateEventIteratorStream(new \ArrayIterator(['event'])))->current();
     }
 
@@ -45,13 +45,13 @@ class AggregateEventIteratorStreamTest extends TestCase
 
         $eventStream->next();
         $currentKey = $eventStream->key();
-        $this->assertCount(2, $eventStream);
-        $this->assertEquals($currentKey, $eventStream->key());
+        static::assertCount(2, $eventStream);
+        static::assertEquals($currentKey, $eventStream->key());
 
         foreach ($eventStream as $event) {
-            $this->assertInstanceOf(AggregateEvent::class, $event);
+            static::assertInstanceOf(AggregateEvent::class, $event);
         }
 
-        $this->assertNull($eventStream->key());
+        static::assertNull($eventStream->key());
     }
 }

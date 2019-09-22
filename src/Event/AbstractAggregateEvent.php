@@ -41,7 +41,7 @@ abstract class AbstractAggregateEvent implements AggregateEvent
         array $metadata,
         \DateTimeImmutable $createdAt
     ) {
-        $this->checkImmutability();
+        $this->assertImmutable();
 
         $this->identity = $aggregateId;
         $this->version = $aggregateVersion;

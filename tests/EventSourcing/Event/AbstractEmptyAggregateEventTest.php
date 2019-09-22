@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Gears\EventSourcing\Tests\Event;
 
+use Gears\Event\Exception\EventException;
 use Gears\EventSourcing\Aggregate\AggregateVersion;
 use Gears\EventSourcing\Tests\Stub\AbstractEmptyAggregateEventStub;
 use Gears\Identity\UuidIdentity;
@@ -29,7 +30,7 @@ class AbstractEmptyAggregateEventTest extends TestCase
             UuidIdentity::fromString('3247cb6e-e9c7-4f3a-9c6c-0dec26a0353f')
         );
 
-        $this->assertLessThanOrEqual(new \DateTimeImmutable('now'), $aggregateEvent->getCreatedAt());
+        static::assertLessThanOrEqual(new \DateTimeImmutable('now'), $aggregateEvent->getCreatedAt());
     }
 
     public function testReconstitution(): void
@@ -48,10 +49,10 @@ class AbstractEmptyAggregateEventTest extends TestCase
             ]
         );
 
-        $this->assertSame($identity, $aggregateEvent->getAggregateId());
-        $this->assertSame(10, $aggregateEvent->getAggregateVersion()->getValue());
-        $this->assertEquals($metadata, $aggregateEvent->getMetadata());
-        $this->assertEquals($now, $aggregateEvent->getCreatedAt());
+        static::assertSame($identity, $aggregateEvent->getAggregateId());
+        static::assertSame(10, $aggregateEvent->getAggregateVersion()->getValue());
+        static::assertEquals($metadata, $aggregateEvent->getMetadata());
+        static::assertEquals($now, $aggregateEvent->getCreatedAt());
     }
 
     public function testMetadata(): void
@@ -60,37 +61,39 @@ class AbstractEmptyAggregateEventTest extends TestCase
             UuidIdentity::fromString('3247cb6e-e9c7-4f3a-9c6c-0dec26a0353f')
         );
 
-        $this->assertEmpty($aggregateEvent->getMetadata());
+        static::assertEmpty($aggregateEvent->getMetadata());
 
         $newAggregateEvent = $aggregateEvent->withMetadata(['userId' => '123456']);
 
-        $this->assertEmpty($aggregateEvent->getMetadata());
-        $this->assertEquals(['userId' => '123456'], $newAggregateEvent->getMetadata());
+        static::assertEmpty($aggregateEvent->getMetadata());
+        static::assertEquals(['userId' => '123456'], $newAggregateEvent->getMetadata());
     }
 
-    /**
-     * @expectedException  \Gears\Event\Exception\EventException
-     * @expectedExceptionMessageRegExp /^Only new events can get a new version, event .+ already at version 10$/
-     */
     public function testNoNewVersion(): void
     {
+        $this->expectException(EventException::class);
+        $this->expectExceptionMessageRegExp(
+            '/^Only new events can get a new version, event ".+" already at version "10"$/'
+        );
+
         $aggregateEvent = AbstractEmptyAggregateEventStub::instance(
             UuidIdentity::fromString('3247cb6e-e9c7-4f3a-9c6c-0dec26a0353f')
         );
 
         $newAggregateEvent = $aggregateEvent->withAggregateVersion(new AggregateVersion(10));
 
-        $this->assertEquals(10, $newAggregateEvent->getAggregateVersion()->getValue());
+        static::assertEquals(10, $newAggregateEvent->getAggregateVersion()->getValue());
 
         $newAggregateEvent->withAggregateVersion(new AggregateVersion(20));
     }
 
-    /**
-     * @expectedException  \Gears\Event\Exception\EventException
-     * @expectedExceptionMessageRegExp /^Aggregate events can not get version 0 set, version 0 given to event .+$/
-     */
     public function testNoNewVersionZero(): void
     {
+        $this->expectException(EventException::class);
+        $this->expectExceptionMessageRegExp(
+            '/^Aggregate events can not get version 0 set, version "0" given to event ".+"$/'
+        );
+
         $aggregateEvent = AbstractEmptyAggregateEventStub::instance(
             UuidIdentity::fromString('3247cb6e-e9c7-4f3a-9c6c-0dec26a0353f')
         );
@@ -106,7 +109,7 @@ class AbstractEmptyAggregateEventTest extends TestCase
 
         $newAggregateEvent = $aggregateEvent->withAggregateVersion(new AggregateVersion(10));
 
-        $this->assertNotSame($aggregateEvent, $newAggregateEvent);
-        $this->assertEquals(10, $newAggregateEvent->getAggregateVersion()->getValue());
+        static::assertNotSame($aggregateEvent, $newAggregateEvent);
+        static::assertEquals(10, $newAggregateEvent->getAggregateVersion()->getValue());
     }
 }
