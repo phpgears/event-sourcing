@@ -4,4 +4,3 @@ parameters:
     - src
   ignoreErrors:
     - '/^Variable method call on \$this\(Gears\\EventSourcing\\Aggregate\\AbstractAggregateRoot\)\.$/'
-    - '/^Variable method call on \$this\(Gears\\EventSourcing\\Projection\\AbstractProjector\)\.$/'
