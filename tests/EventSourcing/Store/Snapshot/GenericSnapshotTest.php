@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Gears\EventSourcing\Tests\Store\Snapshot;
 
+use Gears\EventSourcing\Store\Snapshot\Exception\SnapshotStoreException;
 use Gears\EventSourcing\Store\Snapshot\GenericSnapshot;
 use Gears\EventSourcing\Tests\Stub\AbstractAggregateEventStub;
 use Gears\EventSourcing\Tests\Stub\AbstractAggregateRootStub;
@@ -24,12 +25,28 @@ use PHPUnit\Framework\TestCase;
  */
 class GenericSnapshotTest extends TestCase
 {
+    public function testInvalidAggregateRoot(): void
+    {
+        $this->expectException(SnapshotStoreException::class);
+        $this->expectExceptionMessage('Cannot create an snapshot of an Aggregate root with recorded events');
+
+        $identity = $this->getMockBuilder(Identity::class)->disableOriginalConstructor()->getMock();
+        $identity->expects(static::any())
+            ->method('getValue')
+            ->will(static::returnValue('aaa'));
+        /** @var Identity $identity */
+        $event = AbstractAggregateEventStub::instance($identity);
+
+        GenericSnapshot::fromAggregateRoot(AbstractAggregateRootStub::instantiateWithEvent($event));
+    }
+
     public function testFromAggregateRoot(): void
     {
         /** @var Identity $identity */
         $identity = $this->getMockBuilder(Identity::class)->disableOriginalConstructor()->getMock();
         $event = AbstractAggregateEventStub::instance($identity);
         $aggregateRoot = AbstractAggregateRootStub::instantiateWithEvent($event);
+        $aggregateRoot->collectRecordedAggregateEvents();
 
         $snapshot = GenericSnapshot::fromAggregateRoot($aggregateRoot);
 

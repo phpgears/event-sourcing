@@ -15,6 +15,7 @@ namespace Gears\EventSourcing\Store\Snapshot;
 
 use Gears\EventSourcing\Aggregate\AggregateRoot;
 use Gears\EventSourcing\Store\GenericStoreStream;
+use Gears\EventSourcing\Store\Snapshot\Exception\SnapshotStoreException;
 use Gears\EventSourcing\Store\StoreStream;
 
 /**
@@ -53,6 +54,12 @@ final class GenericSnapshot implements Snapshot
      */
     public static function fromAggregateRoot(AggregateRoot $aggregateRoot): self
     {
+        if ($aggregateRoot->getRecordedAggregateEvents()->count() !== 0
+            || $aggregateRoot->getRecordedEvents()->count() !== 0
+        ) {
+            throw new SnapshotStoreException('Cannot create an snapshot of an Aggregate root with recorded events');
+        }
+
         return new self(GenericStoreStream::fromAggregateRoot($aggregateRoot), $aggregateRoot);
     }
 

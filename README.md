@@ -132,7 +132,7 @@ $customAggregate = CustomAggregate::create($aggregateId);
 $customAggregate->doSomething();
 
 foreach ($customAggregate->collectRecordedAggregateEvents() as $aggregateEvent) {
-    $aggregateStore->save($aggregateEvent);
+    $aggregateStore->store($aggregateEvent);
 }
 ```
 
@@ -162,6 +162,12 @@ While on a first step a user is created in the system (data fully or partially f
 You can consider two methods on the User aggregate to accomplish this task, createUser() that creates the user Entity with whatever data provided, and validateUser() which validates the used based for example on a code sent to his email
 
 Both of these methods will create an Aggregate Event that will be persisted in the Event Store but only the later will create a UserRegistered Domain event which can be relevant for other parts of your system (i.e. creating a user wallet)
+
+### Aggregate Repository
+
+### Event Store
+
+### Snapshot Store
 
 ## Contributing
 

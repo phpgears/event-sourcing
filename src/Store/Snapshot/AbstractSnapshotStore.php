@@ -40,15 +40,15 @@ abstract class AbstractSnapshotStore implements SnapshotStore
     /**
      * Deserialize aggregate root.
      *
-     * @param string $serializedAggregate
+     * @param string $serialized
      *
      * @throws SnapshotStoreException
      *
      * @return AggregateRoot
      */
-    final protected function deserializeAggregateRoot(string $serializedAggregate): AggregateRoot
+    final protected function deserializeAggregateRoot(string $serialized): AggregateRoot
     {
-        $aggregateRoot = $this->serializer->fromSerialized($serializedAggregate);
+        $aggregateRoot = $this->serializer->fromSerialized($serialized);
 
         if ($aggregateRoot->getRecordedAggregateEvents()->count() !== 0
             || $aggregateRoot->getRecordedEvents()->count() !== 0

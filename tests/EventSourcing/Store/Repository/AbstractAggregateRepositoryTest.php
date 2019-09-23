@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Gears\EventSourcing\Tests\Store\Repository;
 
+use Gears\Event\EventArrayCollection;
 use Gears\EventSourcing\Aggregate\AggregateRoot;
 use Gears\EventSourcing\Aggregate\AggregateVersion;
 use Gears\EventSourcing\Event\AggregateEventArrayStream;
@@ -96,6 +97,12 @@ class AbstractAggregateRepositoryTest extends TestCase
         $aggregateRoot->expects(static::once())
             ->method('getIdentity')
             ->will(static::returnValue($identity));
+        $aggregateRoot->expects(static::once())
+            ->method('getRecordedAggregateEvents')
+            ->will(static::returnValue(new AggregateEventArrayStream([])));
+        $aggregateRoot->expects(static::once())
+            ->method('getRecordedEvents')
+            ->will(static::returnValue(new EventArrayCollection([])));
         $snapshot = GenericSnapshot::fromAggregateRoot($aggregateRoot);
 
         $snapshotStore = $this->getMockBuilder(SnapshotStore::class)->disableOriginalConstructor()->getMock();
@@ -127,6 +134,7 @@ class AbstractAggregateRepositoryTest extends TestCase
             ->will(static::returnValue($eventStream));
         /** @var EventStore $eventStore */
         $aggregateRoot = AbstractAggregateRootStub::instantiateWithEvent($event);
+        $aggregateRoot->collectRecordedAggregateEvents();
         $snapshot = GenericSnapshot::fromAggregateRoot($aggregateRoot);
 
         $snapshotStore = $this->getMockBuilder(SnapshotStore::class)->disableOriginalConstructor()->getMock();

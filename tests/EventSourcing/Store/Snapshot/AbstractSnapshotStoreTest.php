@@ -15,10 +15,10 @@ namespace Gears\EventSourcing\Tests\Store\Snapshot;
 
 use Gears\EventSourcing\Store\GenericStoreStream;
 use Gears\EventSourcing\Store\Snapshot\Exception\SnapshotStoreException;
-use Gears\EventSourcing\Store\Snapshot\GenericSnapshot;
 use Gears\EventSourcing\Tests\Stub\AbstractAggregateEventStub;
 use Gears\EventSourcing\Tests\Stub\AbstractAggregateRootStub;
 use Gears\EventSourcing\Tests\Stub\AbstractSnapshotStoreStub;
+use Gears\EventSourcing\Tests\Stub\SnapshotStub;
 use Gears\Identity\Identity;
 use PHPUnit\Framework\TestCase;
 
@@ -40,7 +40,7 @@ class AbstractSnapshotStoreTest extends TestCase
         $event = AbstractAggregateEventStub::instance($identity);
         $aggregateRoot = AbstractAggregateRootStub::instantiateWithEvent($event);
 
-        (new AbstractSnapshotStoreStub())->store(GenericSnapshot::fromAggregateRoot($aggregateRoot));
+        (new AbstractSnapshotStoreStub())->store(new SnapshotStub($aggregateRoot));
     }
 
     public function testInvalidAggregateRootLoad(): void
