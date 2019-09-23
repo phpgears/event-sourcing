@@ -47,6 +47,16 @@ class AggregateVersionTest extends TestCase
         static::assertNotSame($version, $next);
     }
 
+    public function testInvalidPrevious(): void
+    {
+        $this->expectException(AggregateException::class);
+        $this->expectExceptionMessage('Version value cannot be lowered below 0');
+
+        $version = new AggregateVersion(0);
+
+        $version->getPrevious();
+    }
+
     public function testGetPrevious(): void
     {
         $version = new AggregateVersion(10);

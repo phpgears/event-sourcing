@@ -26,6 +26,8 @@ final class AggregateVersion
      * Version constructor.
      *
      * @param int $value
+     *
+     * @throws AggregateException
      */
     public function __construct(int $value)
     {
@@ -74,10 +76,16 @@ final class AggregateVersion
     /**
      * Get previous version.
      *
+     * @throws AggregateException
+     *
      * @return AggregateVersion
      */
     public function getPrevious(): self
     {
+        if ($this->value === 0) {
+            throw new AggregateException('Version value cannot be lowered below 0');
+        }
+
         $clone = clone $this;
         $clone->value = $this->value - 1;
 

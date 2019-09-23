@@ -61,14 +61,9 @@ interface EventStore
      *
      * @param StoreStream          $stream
      * @param AggregateEventStream $eventStream
-     * @param AggregateVersion     $expectedVersion
      *
      * @throws \Gears\EventSourcing\Store\Event\Exception\ConcurrencyException
      * @throws \Gears\EventSourcing\Store\Event\Exception\EventStoreException
      */
-    public function store(
-        StoreStream $stream,
-        AggregateEventStream $eventStream,
-        AggregateVersion $expectedVersion
-    ): void;
+    public function store(StoreStream $stream, AggregateEventStream $eventStream): void;
 }

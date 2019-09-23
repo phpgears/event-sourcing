@@ -91,61 +91,41 @@ abstract class AbstractEventStore implements EventStore
     /**
      * {@inheritdoc}
      */
-    public function store(
-        StoreStream $stream,
-        AggregateEventStream $eventStream,
-        AggregateVersion $expectedVersion
-    ): void {
+    public function store(StoreStream $stream, AggregateEventStream $eventStream): void
+    {
         if ($eventStream->count() === 0) {
             return;
         }
-        $eventStream->rewind();
 
         if (!$this->streamExists($stream)) {
             $this->createStream($stream);
         }
 
-        $startVersion = $this->getStreamVersion($stream);
-        if (!$startVersion->isEqualTo($expectedVersion)) {
+        $eventStream->rewind();
+        $expectedVersion = $eventStream->current()->getAggregateVersion()->getPrevious();
+
+        $currentVersion = $this->getStreamVersion($stream);
+        if (!$currentVersion->isEqualTo($expectedVersion)) {
             throw new ConcurrencyException(\sprintf(
                 'Expected stream version "%s" does not match current version "%s"',
                 $expectedVersion->getValue(),
-                $startVersion->getValue()
+                $currentVersion->getValue()
             ));
         }
 
-        $this->storeEvents($stream, $eventStream, $expectedVersion);
+        foreach ($eventStream as $aggregateEvent) {
+            $aggregateVersion = $aggregateEvent->getAggregateVersion();
+
+            if (!$aggregateVersion->getPrevious()->isEqualTo($currentVersion)) {
+                throw new ConcurrencyException('Event stream cannot be stored due to versions mismatch');
+            }
+
+            $currentVersion = $currentVersion->getNext();
+        }
 
         $eventStream->rewind();
-        $events = \iterator_to_array($eventStream);
-        /** @var AggregateVersion $finalVersion */
-        $finalVersion = \end($events)->getAggregateVersion();
-
-        $endVersion = $this->getStreamVersion($stream);
-        if (!$endVersion->isEqualTo($finalVersion)) {
-            throw new ConcurrencyException(\sprintf(
-                'Expected final stream version "%s" does not match current version "%s"',
-                $finalVersion->getValue(),
-                $endVersion->getValue()
-            ));
-        }
+        $this->storeEvents($stream, $eventStream);
     }
-
-    /**
-     * Check stream existence.
-     *
-     * @param StoreStream $stream
-     *
-     * @return bool
-     */
-    abstract protected function streamExists(StoreStream $stream): bool;
-
-    /**
-     * Create stream.
-     *
-     * @param StoreStream $stream
-     */
-    abstract protected function createStream(StoreStream $stream): void;
 
     /**
      * Load aggregate events from a version.
@@ -182,13 +162,24 @@ abstract class AbstractEventStore implements EventStore
      *
      * @param StoreStream          $stream
      * @param AggregateEventStream $eventStream
-     * @param AggregateVersion     $expectedVersion
      */
-    abstract protected function storeEvents(
-        StoreStream $stream,
-        AggregateEventStream $eventStream,
-        AggregateVersion $expectedVersion
-    ): void;
+    abstract protected function storeEvents(StoreStream $stream, AggregateEventStream $eventStream): void;
+
+    /**
+     * Check stream existence.
+     *
+     * @param StoreStream $stream
+     *
+     * @return bool
+     */
+    abstract protected function streamExists(StoreStream $stream): bool;
+
+    /**
+     * Create stream.
+     *
+     * @param StoreStream $stream
+     */
+    abstract protected function createStream(StoreStream $stream): void;
 
     /**
      * Get current stream version.

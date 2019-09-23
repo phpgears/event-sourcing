@@ -144,7 +144,7 @@ class AbstractEventStoreTest extends TestCase
     public function testStoreInvalidVersion(): void
     {
         $this->expectException(ConcurrencyException::class);
-        $this->expectExceptionMessage('Expected stream version "10" does not match current version "0"');
+        $this->expectExceptionMessage('Expected stream version "9" does not match current version "0"');
 
         $identity = $this->getMockBuilder(Identity::class)->disableOriginalConstructor()->getMock();
         $identity->expects(static::any())
@@ -156,7 +156,30 @@ class AbstractEventStoreTest extends TestCase
         $event = AbstractAggregateEventStub::instance($identity);
         $eventStream = new AggregateEventArrayStream([$event->withAggregateVersion(new AggregateVersion(10))]);
 
-        (new AbstractEventStoreStub())->store($stream, $eventStream, new AggregateVersion(10));
+        (new AbstractEventStoreStub())->store($stream, $eventStream);
+    }
+
+    public function testStoreInvalidStreamVersion(): void
+    {
+        $this->expectException(ConcurrencyException::class);
+        $this->expectExceptionMessage('Event stream cannot be stored due to versions mismatch');
+
+        $identity = $this->getMockBuilder(Identity::class)->disableOriginalConstructor()->getMock();
+        $identity->expects(static::any())
+            ->method('getValue')
+            ->will(static::returnValue('aaa'));
+        /** @var Identity $identity */
+        $stream = GenericStoreStream::fromAggregateData(AbstractAggregateRootStub::class, $identity);
+
+        $event = AbstractAggregateEventStub::instance($identity);
+        $eventStream = new AggregateEventArrayStream([
+            $event->withAggregateVersion(new AggregateVersion(1)),
+            $event->withAggregateVersion(new AggregateVersion(2)),
+            $event->withAggregateVersion(new AggregateVersion(5)),
+        ]);
+
+        $eventStore = new AbstractEventStoreStub(null, true);
+        $eventStore->store($stream, $eventStream);
     }
 
     public function testStoreEmpty(): void
@@ -171,29 +194,10 @@ class AbstractEventStoreTest extends TestCase
         $eventStream = new AggregateEventEmptyStream();
 
         $eventStore = (new AbstractEventStoreStub());
-        $eventStore->store($stream, $eventStream, new AggregateVersion(1));
+        $eventStore->store($stream, $eventStream);
 
         $loadedEvents = $eventStore->loadFrom($stream, new AggregateVersion(2));
         static::assertCount(0, $loadedEvents);
-    }
-
-    public function testStoreError(): void
-    {
-        $this->expectException(ConcurrencyException::class);
-        $this->expectExceptionMessage('Expected final stream version "1" does not match');
-
-        $identity = $this->getMockBuilder(Identity::class)->disableOriginalConstructor()->getMock();
-        $identity->expects(static::any())
-            ->method('getValue')
-            ->will(static::returnValue('aaa'));
-        /** @var Identity $identity */
-        $stream = GenericStoreStream::fromAggregateData(AbstractAggregateRootStub::class, $identity);
-
-        $event = AbstractAggregateEventStub::instance($identity);
-        $eventStream = new AggregateEventArrayStream([$event->withAggregateVersion(new AggregateVersion(1))]);
-
-        $eventStore = new AbstractEventStoreStub(null, true);
-        $eventStore->store($stream, $eventStream, new AggregateVersion(0));
     }
 
     public function testStore(): void
@@ -209,7 +213,7 @@ class AbstractEventStoreTest extends TestCase
         $eventStream = new AggregateEventArrayStream([$event->withAggregateVersion(new AggregateVersion(1))]);
 
         $eventStore = new AbstractEventStoreStub();
-        $eventStore->store($stream, $eventStream, new AggregateVersion(0));
+        $eventStore->store($stream, $eventStream);
 
         $loadedFromEvents = $eventStore->loadTo($stream, new AggregateVersion(1));
 
@@ -234,16 +238,14 @@ class AbstractEventStoreTest extends TestCase
                 $event->withAggregateVersion(new AggregateVersion(1)),
                 $event->withAggregateVersion(new AggregateVersion(2)),
                 $event->withAggregateVersion(new AggregateVersion(3)),
-            ]),
-            new AggregateVersion(0)
+            ])
         );
         $eventStore->store(
             $stream,
             new AggregateEventArrayStream([
                 $event->withAggregateVersion(new AggregateVersion(4)),
                 $event->withAggregateVersion(new AggregateVersion(5)),
-            ]),
-            new AggregateVersion(3)
+            ])
         );
 
         $loadedEvents = $eventStore->loadFrom($stream, new AggregateVersion(2), 2);
@@ -282,7 +284,7 @@ class AbstractEventStoreTest extends TestCase
         ]);
 
         $eventStore = new AbstractEventStoreStub();
-        $eventStore->store($stream, $eventStream, new AggregateVersion(0));
+        $eventStore->store($stream, $eventStream);
 
         $loadedEvents = $eventStore->loadTo($stream, new AggregateVersion(4), new AggregateVersion(2));
 

@@ -113,9 +113,7 @@ abstract class AbstractAggregateRepository implements AggregateRepository
             return;
         }
 
-        $originalVersion = $eventStream->current()->getAggregateVersion()->getPrevious();
-
-        $this->eventStore->store($storeStream, $eventStream, $originalVersion);
+        $this->eventStore->store($storeStream, $eventStream);
     }
 
     /**

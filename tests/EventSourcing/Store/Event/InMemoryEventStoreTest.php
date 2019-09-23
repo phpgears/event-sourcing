@@ -15,7 +15,6 @@ namespace Gears\EventSourcing\Tests\Store\Event;
 
 use Gears\EventSourcing\Aggregate\AggregateVersion;
 use Gears\EventSourcing\Event\AggregateEventArrayStream;
-use Gears\EventSourcing\Store\Event\Exception\EventStoreException;
 use Gears\EventSourcing\Store\Event\InMemoryEventStore;
 use Gears\EventSourcing\Store\GenericStoreStream;
 use Gears\EventSourcing\Tests\Stub\AbstractAggregateEventStub;
@@ -28,25 +27,6 @@ use PHPUnit\Framework\TestCase;
  */
 class InMemoryEventStoreTest extends TestCase
 {
-    public function testStoreInvalidVersion(): void
-    {
-        $this->expectException(EventStoreException::class);
-        $this->expectExceptionMessage('Aggregate event for version "10" cannot be stored');
-
-        $identity = $this->getMockBuilder(Identity::class)->disableOriginalConstructor()->getMock();
-        $identity->expects(static::any())
-            ->method('getValue')
-            ->will(static::returnValue('aaa'));
-        /** @var Identity $identity */
-        $stream = GenericStoreStream::fromAggregateData(AbstractAggregateRootStub::class, $identity);
-
-        $event = AbstractAggregateEventStub::instance($identity);
-        $eventStream = new AggregateEventArrayStream([$event->withAggregateVersion(new AggregateVersion(10))]);
-
-        $eventStore = (new InMemoryEventStore());
-        $eventStore->store($stream, $eventStream, new AggregateVersion(0));
-    }
-
     public function testLoadFrom(): void
     {
         $identity = $this->getMockBuilder(Identity::class)->disableOriginalConstructor()->getMock();
@@ -57,19 +37,23 @@ class InMemoryEventStoreTest extends TestCase
         $stream = GenericStoreStream::fromAggregateData(AbstractAggregateRootStub::class, $identity);
 
         $event = AbstractAggregateEventStub::instance($identity);
-        $eventStream = new AggregateEventArrayStream([
-            $event->withAggregateVersion(new AggregateVersion(1)),
-            $event->withAggregateVersion(new AggregateVersion(2)),
-            $event->withAggregateVersion(new AggregateVersion(3)),
-            $event->withAggregateVersion(new AggregateVersion(4)),
-            $event->withAggregateVersion(new AggregateVersion(5)),
-        ]);
 
         $eventStore = (new InMemoryEventStore());
-
-        $eventStore->loadFrom($stream, new AggregateVersion(1));
-
-        $eventStore->store($stream, $eventStream, new AggregateVersion(0));
+        $eventStore->store(
+            $stream,
+            new AggregateEventArrayStream([
+                $event->withAggregateVersion(new AggregateVersion(1)),
+                $event->withAggregateVersion(new AggregateVersion(2)),
+                $event->withAggregateVersion(new AggregateVersion(3)),
+            ])
+        );
+        $eventStore->store(
+            $stream,
+            new AggregateEventArrayStream([
+                $event->withAggregateVersion(new AggregateVersion(4)),
+                $event->withAggregateVersion(new AggregateVersion(5)),
+            ])
+        );
 
         $loadedEvents = $eventStore->loadFrom($stream, new AggregateVersion(2), 2);
 
@@ -98,16 +82,23 @@ class InMemoryEventStoreTest extends TestCase
         $stream = GenericStoreStream::fromAggregateData(AbstractAggregateRootStub::class, $identity);
 
         $event = AbstractAggregateEventStub::instance($identity);
-        $eventStream = new AggregateEventArrayStream([
-            $event->withAggregateVersion(new AggregateVersion(1)),
-            $event->withAggregateVersion(new AggregateVersion(2)),
-            $event->withAggregateVersion(new AggregateVersion(3)),
-            $event->withAggregateVersion(new AggregateVersion(4)),
-            $event->withAggregateVersion(new AggregateVersion(5)),
-        ]);
 
         $eventStore = (new InMemoryEventStore());
-        $eventStore->store($stream, $eventStream, new AggregateVersion(0));
+        $eventStore->store(
+            $stream,
+            new AggregateEventArrayStream([
+                $event->withAggregateVersion(new AggregateVersion(1)),
+                $event->withAggregateVersion(new AggregateVersion(2)),
+                $event->withAggregateVersion(new AggregateVersion(3)),
+            ])
+        );
+        $eventStore->store(
+            $stream,
+            new AggregateEventArrayStream([
+                $event->withAggregateVersion(new AggregateVersion(4)),
+                $event->withAggregateVersion(new AggregateVersion(5)),
+            ])
+        );
 
         $loadedEvents = $eventStore->loadTo($stream, new AggregateVersion(4), new AggregateVersion(2));
 

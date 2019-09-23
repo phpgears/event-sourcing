@@ -107,11 +107,8 @@ class AbstractEventStoreStub extends AbstractEventStore
     /**
      * {@inheritdoc}
      */
-    protected function storeEvents(
-        StoreStream $stream,
-        AggregateEventStream $eventStream,
-        AggregateVersion $expectedVersion
-    ): void {
+    protected function storeEvents(StoreStream $stream, AggregateEventStream $eventStream): void
+    {
         if ($this->doNotStore === true) {
             return;
         }

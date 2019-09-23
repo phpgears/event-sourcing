@@ -17,7 +17,6 @@ use Gears\EventSourcing\Aggregate\AggregateVersion;
 use Gears\EventSourcing\Event\AggregateEvent;
 use Gears\EventSourcing\Event\AggregateEventIteratorStream;
 use Gears\EventSourcing\Event\AggregateEventStream;
-use Gears\EventSourcing\Store\Event\Exception\EventStoreException;
 use Gears\EventSourcing\Store\StoreStream;
 
 /**
@@ -95,31 +94,33 @@ final class InMemoryEventStore extends AbstractEventStore
     /**
      * {@inheritdoc}
      */
-    protected function storeEvents(
-        StoreStream $stream,
-        AggregateEventStream $eventStream,
-        AggregateVersion $expectedVersion
-    ): void {
-        $lastVersion = $this->getStreamVersion($stream);
-
+    protected function storeEvents(StoreStream $stream, AggregateEventStream $eventStream): void
+    {
         $streamId = $this->getStreamId($stream);
 
         foreach ($eventStream as $aggregateEvent) {
             $aggregateVersion = $aggregateEvent->getAggregateVersion();
 
-            if (!$aggregateVersion->getPrevious()->isEqualTo($lastVersion)) {
-                throw new EventStoreException(\sprintf(
-                    'Aggregate event for version "%s" cannot be stored',
-                    $aggregateVersion->getValue()
-                ));
-            }
-
             $this->streams[$streamId][$aggregateVersion->getValue()] = $aggregateEvent;
-
-            $lastVersion = $lastVersion->getNext();
         }
 
         \ksort($this->streams[$streamId]);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function streamExists(StoreStream $stream): bool
+    {
+        return isset($this->streams[$this->getStreamId($stream)]);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function createStream(StoreStream $stream): void
+    {
+        $this->streams[$this->getStreamId($stream)] = [];
     }
 
     /**
@@ -138,22 +139,6 @@ final class InMemoryEventStore extends AbstractEventStore
         $version = \end($versions);
 
         return new AggregateVersion($version);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function streamExists(StoreStream $stream): bool
-    {
-        return isset($this->streams[$this->getStreamId($stream)]);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function createStream(StoreStream $stream): void
-    {
-        $this->streams[$this->getStreamId($stream)] = [];
     }
 
     /**
