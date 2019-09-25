@@ -48,7 +48,11 @@ abstract class AbstractEventStore implements EventStore
             return new AggregateEventEmptyStream();
         }
 
-        return $this->loadEventsFrom($stream, $fromVersion, $count);
+        $toVersion = $count !== null
+            ? new AggregateVersion($fromVersion->getValue() + $count - 1)
+            : null;
+
+        return $this->loadEvents($stream, $fromVersion, $toVersion);
     }
 
     /**
@@ -85,8 +89,23 @@ abstract class AbstractEventStore implements EventStore
             return new AggregateEventEmptyStream();
         }
 
-        return $this->loadEventsTo($stream, $toVersion, $fromVersion);
+        return $this->loadEvents($stream, $fromVersion, $toVersion);
     }
+
+    /**
+     * Get aggregate event stream.
+     *
+     * @param StoreStream           $stream
+     * @param AggregateVersion      $fromVersion
+     * @param AggregateVersion|null $toVersion
+     *
+     * @return AggregateEventStream
+     */
+    abstract protected function loadEvents(
+        StoreStream $stream,
+        AggregateVersion $fromVersion,
+        ?AggregateVersion $toVersion = null
+    ): AggregateEventStream;
 
     /**
      * {@inheritdoc}
@@ -126,36 +145,6 @@ abstract class AbstractEventStore implements EventStore
         $eventStream->rewind();
         $this->storeEvents($stream, $eventStream);
     }
-
-    /**
-     * Load aggregate events from a version.
-     *
-     * @param StoreStream      $stream
-     * @param AggregateVersion $fromVersion
-     * @param int|null         $count
-     *
-     * @return AggregateEventStream
-     */
-    abstract protected function loadEventsFrom(
-        StoreStream $stream,
-        AggregateVersion $fromVersion,
-        ?int $count = null
-    ): AggregateEventStream;
-
-    /**
-     * Load aggregate events up to a version.
-     *
-     * @param StoreStream      $stream
-     * @param AggregateVersion $toVersion
-     * @param AggregateVersion $fromVersion
-     *
-     * @return AggregateEventStream
-     */
-    abstract protected function loadEventsTo(
-        StoreStream $stream,
-        AggregateVersion $toVersion,
-        AggregateVersion $fromVersion
-    ): AggregateEventStream;
 
     /**
      * Append events to store.

@@ -77,31 +77,22 @@ class AbstractEventStoreStub extends AbstractEventStore
     /**
      * {@inheritdoc}
      */
-    protected function loadEventsFrom(
+    protected function loadEvents(
         StoreStream $stream,
         AggregateVersion $fromVersion,
-        ?int $count = null
+        ?AggregateVersion $toVersion = null
     ): AggregateEventStream {
-        return new AggregateEventIteratorStream((new \ArrayObject(\array_slice(
-            $this->stream,
-            $fromVersion->getValue() - 1,
-            $count
-        )))->getIterator());
-    }
+        if ($toVersion !== null) {
+            $events = \array_slice(
+                $this->stream,
+                $fromVersion->getValue() - 1,
+                $toVersion->getValue() - $fromVersion->getValue() + 1
+            );
+        } else {
+            $events = \array_slice($this->stream, $fromVersion->getValue() - 1);
+        }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function loadEventsTo(
-        StoreStream $stream,
-        AggregateVersion $toVersion,
-        AggregateVersion $fromVersion
-    ): AggregateEventStream {
-        return new AggregateEventIteratorStream((new \ArrayObject(\array_slice(
-            $this->stream,
-            $fromVersion->getValue() - 1,
-            $toVersion->getValue() - $fromVersion->getValue() + 1
-        )))->getIterator());
+        return new AggregateEventIteratorStream((new \ArrayObject($events))->getIterator());
     }
 
     /**

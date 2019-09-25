@@ -25,7 +25,7 @@ class AggregateEventEmptyStreamTest extends TestCase
     public function testInvalidTypeStream(): void
     {
         $this->expectException(AggregateEventStreamException::class);
-        $this->expectExceptionMessage('Current method must not be called on AggregateEventEmptyStream');
+        $this->expectExceptionMessage('"Current" method must not be called on AggregateEventEmptyStream');
 
         (new AggregateEventEmptyStream())->current();
     }

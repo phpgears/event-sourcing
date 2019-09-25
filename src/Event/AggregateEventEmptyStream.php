@@ -24,7 +24,7 @@ final class AggregateEventEmptyStream extends \EmptyIterator implements Aggregat
      */
     public function current(): AggregateEvent
     {
-        throw new AggregateEventStreamException('Current method must not be called on AggregateEventEmptyStream');
+        throw new AggregateEventStreamException('"Current" method must not be called on AggregateEventEmptyStream');
     }
 
     /**

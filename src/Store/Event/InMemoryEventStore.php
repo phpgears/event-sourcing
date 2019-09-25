@@ -15,6 +15,7 @@ namespace Gears\EventSourcing\Store\Event;
 
 use Gears\EventSourcing\Aggregate\AggregateVersion;
 use Gears\EventSourcing\Event\AggregateEvent;
+use Gears\EventSourcing\Event\AggregateEventEmptyStream;
 use Gears\EventSourcing\Event\AggregateEventIteratorStream;
 use Gears\EventSourcing\Event\AggregateEventStream;
 use Gears\EventSourcing\Store\StoreStream;
@@ -34,56 +35,25 @@ final class InMemoryEventStore extends AbstractEventStore
     /**
      * {@inheritdoc}
      */
-    protected function loadEventsFrom(
+    protected function loadEvents(
         StoreStream $stream,
         AggregateVersion $fromVersion,
-        ?int $count = null
+        ?AggregateVersion $toVersion = null
     ): AggregateEventStream {
-        $events = new \ArrayObject();
-
         $streamId = $this->getStreamId($stream);
         if (!isset($this->streams[$streamId][$fromVersion->getValue()])) {
             // @codeCoverageIgnoreStart
-            return new AggregateEventIteratorStream($events->getIterator());
+            return new AggregateEventEmptyStream();
             // @codeCoverageIgnoreEnd
         }
 
-        foreach ($this->streams[$streamId] as $version => $event) {
-            if ($version >= $fromVersion->getValue()) {
-                $events->append($event);
-            }
-
-            if ($count !== null && \count($events) === $count) {
-                break;
-            }
-        }
-
-        return new AggregateEventIteratorStream($events->getIterator());
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function loadEventsTo(
-        StoreStream $stream,
-        AggregateVersion $toVersion,
-        AggregateVersion $fromVersion
-    ): AggregateEventStream {
         $events = new \ArrayObject();
-
-        $streamId = $this->getStreamId($stream);
-        if (!isset($this->streams[$streamId][$fromVersion->getValue()])) {
-            // @codeCoverageIgnoreStart
-            return new AggregateEventIteratorStream($events->getIterator());
-            // @codeCoverageIgnoreEnd
-        }
-
         foreach ($this->streams[$streamId] as $version => $event) {
-            if ($version >= $fromVersion->getValue() && $version <= $toVersion->getValue()) {
+            if ($version >= $fromVersion->getValue() && ($toVersion === null || $version <= $toVersion->getValue())) {
                 $events->append($event);
             }
 
-            if ($version >= $toVersion->getValue()) {
+            if ($toVersion !== null && $version >= $toVersion->getValue()) {
                 break;
             }
         }
