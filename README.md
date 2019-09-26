@@ -50,6 +50,9 @@ class AggregateCreated extends AbstractAggregateEvent
     }
 }
 
+/**
+ * @method getThing(): string
+ */
 class SomethingHappened extends AbstractAggregateEvent
 {
     public static function hasHappened(Identity $aggregateId, string $whatHappened)
@@ -58,22 +61,25 @@ class SomethingHappened extends AbstractAggregateEvent
     }
 }
 
+/**
+ * @method getReason(): string
+ */
 class SomethingFinished extends AbstractAggregateEvent
 {
-    public static function hasFinished(Identity $aggregateId, string $whatFinished)
+    public static function hasFinished(Identity $aggregateId, string $reason)
     {
-        return self::occurred($aggregateId, ['thing' => $whatFinished]);
+        return self::occurred($aggregateId, ['reason' => $reason]);
     }
 }
 ```
 
-Mind that AbstractAggregateEvent constructor is protected forcing you to create static named constructors methods so you can take advantage on type hinting for payload. For simplicity protected method `occurred` in available
+Mind that AbstractAggregateEvent constructor is protected forcing you to create static named constructors methods so you can take advantage of type hinting for payload. Although you could use protected method to create aggregate events you're encouraged to use `occurred` method
 
-This events are then recorded and applied on Aggregate roots
+This events are then recorded and applied on Aggregate root
 
 ### Aggregate root
 
-Aggregate roots should implement `Gears\EventSourcing\Aggregate\AggregateRoot` interface. You can extend from `Gears\EventSourcing\Aggregate\AbstractAggregateRoot` for simplicity
+Aggregate root should implement `Gears\EventSourcing\Aggregate\AggregateRoot` interface. You can extend from `Gears\EventSourcing\Aggregate\AbstractAggregateRoot` for simplicity
 
 ```php
 use Gears\EventSourcing\Aggregate\AbstractAggregateRoot;
@@ -108,12 +114,12 @@ class CustomAggregate extends AbstractAggregateRoot
 
     protected function applySomethingHappened(SomethingHappened $event): void
     {
-        // do something with $event->get('thing');
+        // do something with $event->getThing();
     }
 
     protected function applySomethingFinished(SomethingFinished $event): void
     {
-        // do something with $event->get('thing');
+        // do something with $event->getReason();
     }
 }
 ```
@@ -122,7 +128,7 @@ class CustomAggregate extends AbstractAggregateRoot
 
 Every operation in aggregates should be made through aggregate events, even aggregate's own creation (see example above), that's the reason AbstractAggregateRoot constructor is protected.
 
-Aggregate events represent facts relevant to the Event Sourcing system such AggregateCreated and SomethingFinished in the previous example
+Aggregate events represent facts relevant to the Event Sourcing system such as AggregateCreated, SomethingHappened and SomethingFinished in the previous example
 
 Aggregate events should be finally collected, persisted on an event store and eventually dispatched to an event bus depending on the Projection mechanism at work
 
@@ -131,16 +137,18 @@ $aggregateId = CustomAggregateIdentity::fromString('4c4316cb-b48b-44fb-a034-90d7
 $customAggregate = CustomAggregate::create($aggregateId);
 $customAggregate->doSomething();
 
-foreach ($customAggregate->collectRecordedAggregateEvents() as $aggregateEvent) {
-    $aggregateStore->store($aggregateEvent);
-}
+$eventStore->store($customAggregate->collectRecordedAggregateEvents());
 ```
 
 #### Aggregate Events vs Domain Events
 
+> This is a key difference between this package and other Event Sourcing libraries out there
+
 Aggregate roots can collect two fundamentally different types of events, Aggregate events have already been discussed in the section above, the second kind of events are Domain events which represent facts relevant to the Domain
 
-They differ drastically and conceptually on who are this events relevant or meant to. While Aggregate Events are meant _only_ for the Event Sourcing system, that is Event Store persistence, Aggregate root reconstruction, Projection, Snapshotting, Sagas and optionally other derivatives, Domain Events are relevant to the application Domain in itself, that is this or other parts or Bounded Contexts, of your system
+They differ drastically and conceptually on who are this events relevant or meant to. While Aggregate Events are meant _only_ for the Event Sourcing system, that is Event Store persistence, Aggregate root reconstitution, Projection, Snapshotting, Sagas and others, Domain Events are relevant to the application Domain in itself, that is this and/or other parts or Bounded Contexts of your system
+
+**You should NEVER use Aggregate events to drive your application execution or signal other parts of your system, You MUST use Domain events for those purposes**
 
 Domain events must be collected and sent to an event bus, head to [gears/event](https://github.com/phpgears/event) to learn more about this topic
 

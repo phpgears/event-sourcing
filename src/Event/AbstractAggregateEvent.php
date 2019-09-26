@@ -29,14 +29,12 @@ abstract class AbstractAggregateEvent implements AggregateEvent
      * Prevent aggregate event direct instantiation.
      *
      * @param Identity             $aggregateId
-     * @param AggregateVersion     $aggregateVersion
      * @param array<string, mixed> $payload
      * @param array<string, mixed> $metadata
      * @param \DateTimeImmutable   $createdAt
      */
     final protected function __construct(
         Identity $aggregateId,
-        AggregateVersion $aggregateVersion,
         array $payload,
         array $metadata,
         \DateTimeImmutable $createdAt
@@ -44,7 +42,7 @@ abstract class AbstractAggregateEvent implements AggregateEvent
         $this->assertImmutable();
 
         $this->identity = $aggregateId;
-        $this->version = $aggregateVersion;
+        $this->version = new AggregateVersion(0);
         $this->setPayload($payload);
         $this->setMetadata($metadata);
         $this->createdAt = $createdAt->setTimezone(new \DateTimeZone('UTC'));
@@ -63,13 +61,7 @@ abstract class AbstractAggregateEvent implements AggregateEvent
     {
         $timeProvider = $timeProvider ?? new SystemTimeProvider();
 
-        return new static(
-            $aggregateId,
-            new AggregateVersion(0),
-            $payload,
-            [],
-            $timeProvider->getCurrentTime()
-        );
+        return new static($aggregateId, $payload, [], $timeProvider->getCurrentTime());
     }
 
     /**
@@ -79,13 +71,10 @@ abstract class AbstractAggregateEvent implements AggregateEvent
      */
     final public static function reconstitute(array $payload, array $attributes = [])
     {
-        return new static(
-            $attributes['aggregateId'],
-            $attributes['aggregateVersion'],
-            $payload,
-            $attributes['metadata'],
-            $attributes['createdAt']
-        );
+        $event = new static($attributes['aggregateId'], $payload, $attributes['metadata'], $attributes['createdAt']);
+        $event->version = $attributes['aggregateVersion'];
+
+        return $event;
     }
 
     /**

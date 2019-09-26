@@ -33,7 +33,7 @@ abstract class AbstractEventStore implements EventStore
         AggregateVersion $fromVersion,
         ?int $count = null
     ): AggregateEventStream {
-        if ($fromVersion->getValue() < 1) {
+        if ($fromVersion->isEqualTo(new AggregateVersion(0))) {
             throw new EventStoreException(
                 \sprintf('Event store load from version must be at least 1, "%s" given', $fromVersion->getValue())
             );
@@ -63,14 +63,14 @@ abstract class AbstractEventStore implements EventStore
         AggregateVersion $toVersion,
         ?AggregateVersion $fromVersion = null
     ): AggregateEventStream {
-        if ($toVersion->getValue() < 1) {
+        if ($toVersion->isEqualTo(new AggregateVersion(0))) {
             throw new EventStoreException(
                 \sprintf('Event store load to version must be at least 1, "%s" given', $toVersion->getValue())
             );
         }
 
         $fromVersion = $fromVersion ?? new AggregateVersion(1);
-        if ($fromVersion->getValue() < 1) {
+        if ($fromVersion->isEqualTo(new AggregateVersion(0))) {
             throw new EventStoreException(
                 \sprintf('Event store load from version must be at least 1, "%s" given', $fromVersion->getValue())
             );

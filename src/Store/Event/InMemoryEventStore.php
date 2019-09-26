@@ -28,7 +28,7 @@ final class InMemoryEventStore extends AbstractEventStore
     /**
      * AggregateEvents streams.
      *
-     * @var array<AggregateEvent[]>
+     * @var array<string, array<int, AggregateEvent[]>>
      */
     private $streams = [];
 
@@ -47,18 +47,10 @@ final class InMemoryEventStore extends AbstractEventStore
             // @codeCoverageIgnoreEnd
         }
 
-        $events = new \ArrayObject();
-        foreach ($this->streams[$streamId] as $version => $event) {
-            if ($version >= $fromVersion->getValue() && ($toVersion === null || $version <= $toVersion->getValue())) {
-                $events->append($event);
-            }
+        $length = $toVersion !== null ? $toVersion->getValue() - $fromVersion->getValue() + 1 : null;
+        $events = \array_slice($this->streams[$streamId], $fromVersion->getValue() - 1, $length);
 
-            if ($toVersion !== null && $version >= $toVersion->getValue()) {
-                break;
-            }
-        }
-
-        return new AggregateEventIteratorStream($events->getIterator());
+        return new AggregateEventIteratorStream((new \ArrayObject($events))->getIterator());
     }
 
     /**
@@ -69,9 +61,7 @@ final class InMemoryEventStore extends AbstractEventStore
         $streamId = $this->getStreamId($stream);
 
         foreach ($eventStream as $aggregateEvent) {
-            $aggregateVersion = $aggregateEvent->getAggregateVersion();
-
-            $this->streams[$streamId][$aggregateVersion->getValue()] = $aggregateEvent;
+            $this->streams[$streamId][$aggregateEvent->getAggregateVersion()->getValue()] = $aggregateEvent;
         }
 
         \ksort($this->streams[$streamId]);
