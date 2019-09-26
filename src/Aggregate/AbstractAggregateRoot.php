@@ -15,6 +15,7 @@ namespace Gears\EventSourcing\Aggregate;
 
 use Gears\Aggregate\EventBehaviour;
 use Gears\EventSourcing\Aggregate\Exception\AggregateException;
+use Gears\EventSourcing\Aggregate\Exception\AggregateVersionException;
 use Gears\EventSourcing\Event\AggregateEvent;
 use Gears\EventSourcing\Event\AggregateEventIteratorStream;
 use Gears\EventSourcing\Event\AggregateEventStream;
@@ -71,7 +72,7 @@ abstract class AbstractAggregateRoot implements AggregateRoot
     /**
      * {@inheritdoc}
      *
-     * @throws AggregateException
+     * @throws AggregateVersionException
      */
     final public function replayAggregateEventStream(AggregateEventStream $eventStream): void
     {
@@ -79,7 +80,7 @@ abstract class AbstractAggregateRoot implements AggregateRoot
             $aggregateVersion = $event->getAggregateVersion();
 
             if (!$aggregateVersion->isEqualTo($this->version->getNext())) {
-                throw new AggregateException(\sprintf(
+                throw new AggregateVersionException(\sprintf(
                     'Aggregate event "%s" cannot be replayed, event version is "%s" and aggregate is "%s"',
                     \get_class($event),
                     $aggregateVersion->getValue(),
@@ -87,9 +88,9 @@ abstract class AbstractAggregateRoot implements AggregateRoot
                 ));
             }
 
-            $this->version = $aggregateVersion;
-
             $this->applyAggregateEvent($event);
+
+            $this->version = $aggregateVersion;
         }
     }
 
@@ -98,23 +99,34 @@ abstract class AbstractAggregateRoot implements AggregateRoot
      *
      * @param AggregateEvent $event
      *
-     * @throws AggregateException
+     * @throws AggregateVersionException
      */
     final protected function recordAggregateEvent(AggregateEvent $event): void
     {
         if (!$event->getAggregateVersion()->isEqualTo(new AggregateVersion(0))) {
-            throw new AggregateException(\sprintf(
+            throw new AggregateVersionException(\sprintf(
                 'Only new aggregate events can be recorded, event "%s" with version "%s" given',
                 \get_class($event),
                 $event->getAggregateVersion()->getValue()
             ));
         }
 
+        $this->applyAggregateEvent($event);
+
         $this->version = $this->version->getNext();
 
-        $this->recordedAggregateEvents->append($event->withAggregateVersion($this->version));
+        /** @var AggregateEvent $recordedEvent */
+        $recordedEvent = $event::reconstitute(
+            $event->getPayload(),
+            [
+                'aggregateId' => $event->getAggregateId(),
+                'aggregateVersion' => $this->version,
+                'metadata' => $event->getMetadata(),
+                'createdAt' => $event->getCreatedAt(),
+            ]
+        );
 
-        $this->applyAggregateEvent($event);
+        $this->recordedAggregateEvents->append($recordedEvent);
     }
 
     /**

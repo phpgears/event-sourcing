@@ -71,7 +71,12 @@ abstract class AbstractAggregateEvent implements AggregateEvent
      */
     final public static function reconstitute(array $payload, array $attributes = [])
     {
-        $event = new static($attributes['aggregateId'], $payload, $attributes['metadata'], $attributes['createdAt']);
+        $event = new static(
+            $attributes['aggregateId'],
+            $payload,
+            $attributes['metadata'],
+            $attributes['createdAt']
+        );
         $event->version = $attributes['aggregateVersion'];
 
         return $event;

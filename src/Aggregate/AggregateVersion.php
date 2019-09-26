@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Gears\EventSourcing\Aggregate;
 
-use Gears\EventSourcing\Aggregate\Exception\AggregateException;
+use Gears\EventSourcing\Aggregate\Exception\AggregateVersionException;
 
 final class AggregateVersion
 {
@@ -27,12 +27,12 @@ final class AggregateVersion
      *
      * @param int $value
      *
-     * @throws AggregateException
+     * @throws AggregateVersionException
      */
     public function __construct(int $value)
     {
         if ($value < 0) {
-            throw new AggregateException(\sprintf('Version value should be higher than 0, "%s" given', $value));
+            throw new AggregateVersionException(\sprintf('Version value should be higher than 0, "%s" given', $value));
         }
 
         $this->value = $value;
@@ -76,14 +76,14 @@ final class AggregateVersion
     /**
      * Get previous version.
      *
-     * @throws AggregateException
+     * @throws AggregateVersionException
      *
      * @return AggregateVersion
      */
     public function getPrevious(): self
     {
         if ($this->value === 0) {
-            throw new AggregateException('Version value cannot be lowered below 0');
+            throw new AggregateVersionException('Version value cannot be lowered below 0');
         }
 
         $clone = clone $this;

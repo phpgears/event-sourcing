@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Gears\EventSourcing\Tests\Aggregate;
 
 use Gears\EventSourcing\Aggregate\AggregateVersion;
-use Gears\EventSourcing\Aggregate\Exception\AggregateException;
+use Gears\EventSourcing\Aggregate\Exception\AggregateVersionException;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -24,7 +24,7 @@ class AggregateVersionTest extends TestCase
 {
     public function testInvalidValue(): void
     {
-        $this->expectException(AggregateException::class);
+        $this->expectException(AggregateVersionException::class);
         $this->expectExceptionMessage('Version value should be higher than 0, "-1" given');
 
         new AggregateVersion(-1);
@@ -49,7 +49,7 @@ class AggregateVersionTest extends TestCase
 
     public function testInvalidPrevious(): void
     {
-        $this->expectException(AggregateException::class);
+        $this->expectException(AggregateVersionException::class);
         $this->expectExceptionMessage('Version value cannot be lowered below 0');
 
         $version = new AggregateVersion(0);

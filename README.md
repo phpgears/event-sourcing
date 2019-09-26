@@ -174,13 +174,13 @@ Both of these methods will create an Aggregate Event that will be eventually per
 ### Aggregate Repository
 
 
-
 ### Event Store
 
 
+#### Concurrency
+
 
 ### Snapshot Store
-
 
 
 ## Contributing

@@ -35,15 +35,4 @@ interface AggregateEvent extends Event
      * @return AggregateVersion
      */
     public function getAggregateVersion(): AggregateVersion;
-
-    /**
-     * Get event with new aggregate version.
-     *
-     * @param AggregateVersion $aggregateVersion
-     *
-     * @throws \Gears\Event\Exception\EventException
-     *
-     * @return mixed|self
-     */
-    public function withAggregateVersion(AggregateVersion $aggregateVersion);
 }

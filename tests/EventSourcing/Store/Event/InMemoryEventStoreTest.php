@@ -42,16 +42,16 @@ class InMemoryEventStoreTest extends TestCase
         $eventStore->store(
             $stream,
             new AggregateEventArrayStream([
-                $event->withAggregateVersion(new AggregateVersion(1)),
-                $event->withAggregateVersion(new AggregateVersion(2)),
-                $event->withAggregateVersion(new AggregateVersion(3)),
+                AbstractAggregateEventStub::withVersion($event, new AggregateVersion(1)),
+                AbstractAggregateEventStub::withVersion($event, new AggregateVersion(2)),
+                AbstractAggregateEventStub::withVersion($event, new AggregateVersion(3)),
             ])
         );
         $eventStore->store(
             $stream,
             new AggregateEventArrayStream([
-                $event->withAggregateVersion(new AggregateVersion(4)),
-                $event->withAggregateVersion(new AggregateVersion(5)),
+                AbstractAggregateEventStub::withVersion($event, new AggregateVersion(4)),
+                AbstractAggregateEventStub::withVersion($event, new AggregateVersion(5)),
             ])
         );
 
@@ -87,16 +87,16 @@ class InMemoryEventStoreTest extends TestCase
         $eventStore->store(
             $stream,
             new AggregateEventArrayStream([
-                $event->withAggregateVersion(new AggregateVersion(1)),
-                $event->withAggregateVersion(new AggregateVersion(2)),
-                $event->withAggregateVersion(new AggregateVersion(3)),
+                AbstractAggregateEventStub::withVersion($event, new AggregateVersion(1)),
+                AbstractAggregateEventStub::withVersion($event, new AggregateVersion(2)),
+                AbstractAggregateEventStub::withVersion($event, new AggregateVersion(3)),
             ])
         );
         $eventStore->store(
             $stream,
             new AggregateEventArrayStream([
-                $event->withAggregateVersion(new AggregateVersion(4)),
-                $event->withAggregateVersion(new AggregateVersion(5)),
+                AbstractAggregateEventStub::withVersion($event, new AggregateVersion(4)),
+                AbstractAggregateEventStub::withVersion($event, new AggregateVersion(5)),
             ])
         );
 

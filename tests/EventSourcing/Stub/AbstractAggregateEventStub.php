@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Gears\EventSourcing\Tests\Stub;
 
+use Gears\EventSourcing\Aggregate\AggregateVersion;
 use Gears\EventSourcing\Event\AbstractAggregateEvent;
 use Gears\Identity\Identity;
 
@@ -35,10 +36,23 @@ class AbstractAggregateEventStub extends AbstractAggregateEvent
     }
 
     /**
-     * {@inheritdoc}
+     * Copy event with new version.
+     *
+     * @param self             $event
+     * @param AggregateVersion $version
+     *
+     * @return static
      */
-    protected static function composeName(): string
+    public static function withVersion(self $event, AggregateVersion $version): self
     {
-        return 'AbstractAggregateEventStub';
+        return $event::reconstitute(
+            $event->getPayload(),
+            [
+                'aggregateId' => $event->getAggregateId(),
+                'aggregateVersion' => $version,
+                'metadata' => $event->getMetadata(),
+                'createdAt' => $event->getCreatedAt(),
+            ]
+        );
     }
 }

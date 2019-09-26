@@ -154,7 +154,9 @@ class AbstractEventStoreTest extends TestCase
         $stream = GenericStoreStream::fromAggregateData(AbstractAggregateRootStub::class, $identity);
 
         $event = AbstractAggregateEventStub::instance($identity);
-        $eventStream = new AggregateEventArrayStream([$event->withAggregateVersion(new AggregateVersion(10))]);
+        $eventStream = new AggregateEventArrayStream([
+            AbstractAggregateEventStub::withVersion($event, new AggregateVersion(10)),
+        ]);
 
         (new AbstractEventStoreStub())->store($stream, $eventStream);
     }
@@ -173,9 +175,9 @@ class AbstractEventStoreTest extends TestCase
 
         $event = AbstractAggregateEventStub::instance($identity);
         $eventStream = new AggregateEventArrayStream([
-            $event->withAggregateVersion(new AggregateVersion(1)),
-            $event->withAggregateVersion(new AggregateVersion(2)),
-            $event->withAggregateVersion(new AggregateVersion(5)),
+            AbstractAggregateEventStub::withVersion($event, new AggregateVersion(1)),
+            AbstractAggregateEventStub::withVersion($event, new AggregateVersion(2)),
+            AbstractAggregateEventStub::withVersion($event, new AggregateVersion(5)),
         ]);
 
         $eventStore = new AbstractEventStoreStub(null, true);
@@ -210,7 +212,9 @@ class AbstractEventStoreTest extends TestCase
         $stream = GenericStoreStream::fromAggregateData(AbstractAggregateRootStub::class, $identity);
 
         $event = AbstractAggregateEventStub::instance($identity);
-        $eventStream = new AggregateEventArrayStream([$event->withAggregateVersion(new AggregateVersion(1))]);
+        $eventStream = new AggregateEventArrayStream([
+                AbstractAggregateEventStub::withVersion($event, new AggregateVersion(1)),
+        ]);
 
         $eventStore = new AbstractEventStoreStub();
         $eventStore->store($stream, $eventStream);
@@ -235,16 +239,16 @@ class AbstractEventStoreTest extends TestCase
         $eventStore->store(
             $stream,
             new AggregateEventArrayStream([
-                $event->withAggregateVersion(new AggregateVersion(1)),
-                $event->withAggregateVersion(new AggregateVersion(2)),
-                $event->withAggregateVersion(new AggregateVersion(3)),
+                AbstractAggregateEventStub::withVersion($event, new AggregateVersion(1)),
+                AbstractAggregateEventStub::withVersion($event, new AggregateVersion(2)),
+                AbstractAggregateEventStub::withVersion($event, new AggregateVersion(3)),
             ])
         );
         $eventStore->store(
             $stream,
             new AggregateEventArrayStream([
-                $event->withAggregateVersion(new AggregateVersion(4)),
-                $event->withAggregateVersion(new AggregateVersion(5)),
+                AbstractAggregateEventStub::withVersion($event, new AggregateVersion(4)),
+                AbstractAggregateEventStub::withVersion($event, new AggregateVersion(5)),
             ])
         );
 
@@ -276,11 +280,11 @@ class AbstractEventStoreTest extends TestCase
 
         $event = AbstractAggregateEventStub::instance($identity);
         $eventStream = new AggregateEventArrayStream([
-            $event->withAggregateVersion(new AggregateVersion(1)),
-            $event->withAggregateVersion(new AggregateVersion(2)),
-            $event->withAggregateVersion(new AggregateVersion(3)),
-            $event->withAggregateVersion(new AggregateVersion(4)),
-            $event->withAggregateVersion(new AggregateVersion(5)),
+            AbstractAggregateEventStub::withVersion($event, new AggregateVersion(1)),
+            AbstractAggregateEventStub::withVersion($event, new AggregateVersion(2)),
+            AbstractAggregateEventStub::withVersion($event, new AggregateVersion(3)),
+            AbstractAggregateEventStub::withVersion($event, new AggregateVersion(4)),
+            AbstractAggregateEventStub::withVersion($event, new AggregateVersion(5)),
         ]);
 
         $eventStore = new AbstractEventStoreStub();

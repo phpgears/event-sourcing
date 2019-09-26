@@ -15,6 +15,7 @@ namespace Gears\EventSourcing\Tests\Aggregate;
 
 use Gears\EventSourcing\Aggregate\AggregateVersion;
 use Gears\EventSourcing\Aggregate\Exception\AggregateException;
+use Gears\EventSourcing\Aggregate\Exception\AggregateVersionException;
 use Gears\EventSourcing\Event\AggregateEvent;
 use Gears\EventSourcing\Event\AggregateEventArrayStream;
 use Gears\EventSourcing\Tests\Stub\AbstractAggregateEventStub;
@@ -29,7 +30,7 @@ class AbstractAggregateRootTest extends TestCase
 {
     public function testInvalidEventApply(): void
     {
-        $this->expectException(AggregateException::class);
+        $this->expectException(AggregateVersionException::class);
         $this->expectExceptionMessageRegExp(
             '/^Only new aggregate events can be recorded, event .+ with version "10" given$/'
         );
@@ -55,10 +56,6 @@ class AbstractAggregateRootTest extends TestCase
         $aggregateEvent->expects(static::any())
             ->method('getAggregateVersion')
             ->will(static::returnValue(new AggregateVersion(0)));
-        $aggregateEvent->expects(static::any())
-            ->method('withAggregateVersion')
-            ->will(static::returnSelf());
-
         /* @var AggregateEvent $aggregateEvent */
 
         AbstractAggregateRootStub::instantiateWithEvent($aggregateEvent);
@@ -84,7 +81,7 @@ class AbstractAggregateRootTest extends TestCase
         static::assertCount(1, $recordedAggregateEvents);
 
         static::assertEquals(
-            [$aggregateEvent->withAggregateVersion(new AggregateVersion(1))],
+            [AbstractAggregateEventStub::withVersion($aggregateEvent, new AggregateVersion(1))],
             \iterator_to_array($recordedAggregateEvents)
         );
     }
@@ -101,7 +98,7 @@ class AbstractAggregateRootTest extends TestCase
 
     public function testReconstituteFromInvalidEvent(): void
     {
-        $this->expectException(AggregateException::class);
+        $this->expectException(AggregateVersionException::class);
         $this->expectExceptionMessageRegExp(
             '/^Aggregate event .+ cannot be replayed, event version is "10" and aggregate is "0"$/'
         );

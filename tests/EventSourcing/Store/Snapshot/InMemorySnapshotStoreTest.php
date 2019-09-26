@@ -43,7 +43,8 @@ class InMemorySnapshotStoreTest extends TestCase
     public function testStore(): void
     {
         $identity = UuidIdentity::fromString(Uuid::uuid4()->toString());
-        $event = AbstractAggregateEventStub::instance($identity)->withAggregateVersion(new AggregateVersion(1));
+        $event = AbstractAggregateEventStub::instance($identity);
+        $event = AbstractAggregateEventStub::withVersion($event, new AggregateVersion(1));
         $aggregateRoot = AbstractAggregateRootStub::reconstituteFromEventStream(
             new AggregateEventArrayStream([$event])
         );

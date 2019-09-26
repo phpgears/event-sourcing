@@ -62,8 +62,8 @@ class AbstractAggregateRepositoryTest extends TestCase
         /** @var Identity $identity */
         $event = AbstractAggregateEventStub::instance($identity);
         $eventStream = new AggregateEventArrayStream([
-            $event->withAggregateVersion(new AggregateVersion(1)),
-            $event->withAggregateVersion(new AggregateVersion(2)),
+            AbstractAggregateEventStub::withVersion($event, new AggregateVersion(1)),
+            AbstractAggregateEventStub::withVersion($event, new AggregateVersion(2)),
         ]);
 
         $eventStore = $this->getMockBuilder(EventStore::class)->disableOriginalConstructor()->getMock();
@@ -124,8 +124,8 @@ class AbstractAggregateRepositoryTest extends TestCase
         /** @var Identity $identity */
         $event = AbstractAggregateEventStub::instance($identity);
         $eventStream = new AggregateEventArrayStream([
-            $event->withAggregateVersion(new AggregateVersion(2)),
-            $event->withAggregateVersion(new AggregateVersion(3)),
+            AbstractAggregateEventStub::withVersion($event, new AggregateVersion(2)),
+            AbstractAggregateEventStub::withVersion($event, new AggregateVersion(3)),
         ]);
 
         $eventStore = $this->getMockBuilder(EventStore::class)->disableOriginalConstructor()->getMock();
