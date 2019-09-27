@@ -118,11 +118,11 @@ abstract class AbstractAggregateRoot implements AggregateRoot
         /** @var AggregateEvent $recordedEvent */
         $recordedEvent = $event::reconstitute(
             $event->getPayload(),
+            $event->getCreatedAt(),
             [
                 'aggregateId' => $event->getAggregateId(),
                 'aggregateVersion' => $this->version,
                 'metadata' => $event->getMetadata(),
-                'createdAt' => $event->getCreatedAt(),
             ]
         );
 

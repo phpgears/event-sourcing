@@ -63,9 +63,9 @@ abstract class AbstractAggregateEvent implements AggregateEvent
      *
      * @return mixed|self
      */
-    final public static function reconstitute(array $payload, array $attributes = [])
+    final public static function reconstitute(array $payload, \DateTimeImmutable $createdAt, array $attributes = [])
     {
-        $event = new static($attributes['aggregateId'], $payload, $attributes['createdAt']);
+        $event = new static($attributes['aggregateId'], $payload, $createdAt);
         $event->version = $attributes['aggregateVersion'];
 
         if (isset($attributes['metadata'])) {

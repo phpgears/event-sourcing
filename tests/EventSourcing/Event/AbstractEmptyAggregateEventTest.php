@@ -40,11 +40,11 @@ class AbstractEmptyAggregateEventTest extends TestCase
 
         $aggregateEvent = AbstractEmptyAggregateEventStub::reconstitute(
             [],
+            $now,
             [
                 'aggregateId' => $identity,
                 'aggregateVersion' => new AggregateVersion(10),
                 'metadata' => $metadata,
-                'createdAt' => $now,
             ]
         );
 

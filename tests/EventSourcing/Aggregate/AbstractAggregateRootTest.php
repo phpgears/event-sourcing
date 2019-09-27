@@ -105,11 +105,11 @@ class AbstractAggregateRootTest extends TestCase
 
         $aggregateEvent = AbstractAggregateEventStub::reconstitute(
             [],
+            new \DateTimeImmutable('now'),
             [
                 'aggregateId' => UuidIdentity::fromString('3247cb6e-e9c7-4f3a-9c6c-0dec26a0353f'),
                 'aggregateVersion' => new AggregateVersion(10),
                 'metadata' => [],
-                'createdAt' => new \DateTimeImmutable('now'),
             ]
         );
 
@@ -122,11 +122,11 @@ class AbstractAggregateRootTest extends TestCase
     {
         $aggregateEvent = AbstractAggregateEventStub::reconstitute(
             [],
+            new \DateTimeImmutable('now'),
             [
                 'aggregateId' => UuidIdentity::fromString('3247cb6e-e9c7-4f3a-9c6c-0dec26a0353f'),
                 'aggregateVersion' => new AggregateVersion(1),
                 'metadata' => ['userId' => '123456'],
-                'createdAt' => new \DateTimeImmutable('now'),
             ]
         );
 

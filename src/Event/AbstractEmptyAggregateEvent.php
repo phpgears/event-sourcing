@@ -62,9 +62,9 @@ abstract class AbstractEmptyAggregateEvent implements AggregateEvent
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    final public static function reconstitute(array $payload, array $attributes = [])
+    final public static function reconstitute(array $payload, \DateTimeImmutable $createdAt, array $attributes = [])
     {
-        $event = new static($attributes['aggregateId'], $attributes['createdAt']);
+        $event = new static($attributes['aggregateId'], $createdAt);
         $event->version = $attributes['aggregateVersion'];
 
         if (isset($attributes['metadata'])) {

@@ -46,11 +46,11 @@ class AbstractEmptyAggregateEventStub extends AbstractEmptyAggregateEvent
     {
         return $event::reconstitute(
             $event->getPayload(),
+            $event->getCreatedAt(),
             [
                 'aggregateId' => $event->getAggregateId(),
                 'aggregateVersion' => $version,
                 'metadata' => $event->getMetadata(),
-                'createdAt' => $event->getCreatedAt(),
             ]
         );
     }
