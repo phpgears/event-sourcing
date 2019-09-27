@@ -30,21 +30,15 @@ abstract class AbstractAggregateEvent implements AggregateEvent
      *
      * @param Identity             $aggregateId
      * @param array<string, mixed> $payload
-     * @param array<string, mixed> $metadata
      * @param \DateTimeImmutable   $createdAt
      */
-    final protected function __construct(
-        Identity $aggregateId,
-        array $payload,
-        array $metadata,
-        \DateTimeImmutable $createdAt
-    ) {
+    final protected function __construct(Identity $aggregateId, array $payload, \DateTimeImmutable $createdAt)
+    {
         $this->assertImmutable();
 
         $this->identity = $aggregateId;
         $this->version = new AggregateVersion(0);
         $this->setPayload($payload);
-        $this->setMetadata($metadata);
         $this->createdAt = $createdAt->setTimezone(new \DateTimeZone('UTC'));
     }
 
@@ -61,7 +55,7 @@ abstract class AbstractAggregateEvent implements AggregateEvent
     {
         $timeProvider = $timeProvider ?? new SystemTimeProvider();
 
-        return new static($aggregateId, $payload, [], $timeProvider->getCurrentTime());
+        return new static($aggregateId, $payload, $timeProvider->getCurrentTime());
     }
 
     /**
@@ -71,13 +65,12 @@ abstract class AbstractAggregateEvent implements AggregateEvent
      */
     final public static function reconstitute(array $payload, array $attributes = [])
     {
-        $event = new static(
-            $attributes['aggregateId'],
-            $payload,
-            $attributes['metadata'],
-            $attributes['createdAt']
-        );
+        $event = new static($attributes['aggregateId'], $payload, $attributes['createdAt']);
         $event->version = $attributes['aggregateVersion'];
+
+        if (isset($attributes['metadata'])) {
+            $event->addMetadata($attributes['metadata']);
+        }
 
         return $event;
     }

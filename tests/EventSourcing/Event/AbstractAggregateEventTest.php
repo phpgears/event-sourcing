@@ -62,7 +62,7 @@ class AbstractAggregateEventTest extends TestCase
 
         static::assertEmpty($aggregateEvent->getMetadata());
 
-        $newAggregateEvent = $aggregateEvent->withMetadata(['userId' => '123456']);
+        $newAggregateEvent = $aggregateEvent->withAddedMetadata(['userId' => '123456']);
 
         static::assertEmpty($aggregateEvent->getMetadata());
         static::assertEquals(['userId' => '123456'], $newAggregateEvent->getMetadata());

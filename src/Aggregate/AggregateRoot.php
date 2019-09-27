@@ -15,20 +15,12 @@ namespace Gears\EventSourcing\Aggregate;
 
 use Gears\Aggregate\AggregateRoot as BaseAggregateRoot;
 use Gears\EventSourcing\Event\AggregateEventStream;
-use Gears\Identity\Identity;
 
 /**
  * AggregateRoot interface.
  */
 interface AggregateRoot extends BaseAggregateRoot
 {
-    /**
-     * Get aggregate identity.
-     *
-     * @return Identity
-     */
-    public function getIdentity(): Identity;
-
     /**
      * Get aggregate version.
      *
