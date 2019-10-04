@@ -16,6 +16,7 @@ namespace Gears\EventSourcing\Event;
 use Gears\Event\Time\SystemTimeProvider;
 use Gears\Event\Time\TimeProvider;
 use Gears\EventSourcing\Aggregate\AggregateVersion;
+use Gears\EventSourcing\Event\Exception\AggregateEventException;
 use Gears\Identity\Identity;
 
 /**
@@ -61,11 +62,26 @@ abstract class AbstractAggregateEvent implements AggregateEvent
     /**
      * {@inheritdoc}
      *
+     * @throws AggregateEventException
+     *
      * @return mixed|self
      */
     final public static function reconstitute(array $payload, \DateTimeImmutable $createdAt, array $attributes = [])
     {
         $event = new static($attributes['aggregateId'], $payload, $createdAt);
+
+        if (!isset($attributes['aggregateVersion'])
+            || !$attributes['aggregateVersion'] instanceof AggregateVersion
+            || (new AggregateVersion(0))->isEqualTo($attributes['aggregateVersion'])
+        ) {
+            throw new AggregateEventException(\sprintf(
+                'Invalid aggregate version, "%s" given',
+                $attributes['aggregateVersion'] instanceof AggregateVersion
+                    ? $attributes['aggregateVersion']->getValue()
+                    : \gettype($attributes['aggregateVersion'])
+            ));
+        }
+
         $event->version = $attributes['aggregateVersion'];
 
         if (isset($attributes['metadata'])) {

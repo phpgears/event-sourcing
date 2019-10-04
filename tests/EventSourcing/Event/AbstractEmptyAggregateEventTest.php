@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Gears\EventSourcing\Tests\Event;
 
 use Gears\EventSourcing\Aggregate\AggregateVersion;
+use Gears\EventSourcing\Event\Exception\AggregateEventException;
 use Gears\EventSourcing\Tests\Stub\AbstractEmptyAggregateEventStub;
 use Gears\Identity\UuidIdentity;
 use PHPUnit\Framework\TestCase;
@@ -30,6 +31,22 @@ class AbstractEmptyAggregateEventTest extends TestCase
         );
 
         static::assertLessThanOrEqual(new \DateTimeImmutable('now'), $aggregateEvent->getCreatedAt());
+    }
+
+    public function testReconstitutionInvalidVersion(): void
+    {
+        $this->expectException(AggregateEventException::class);
+        $this->expectExceptionMessage('Invalid aggregate version, "0" given');
+
+        AbstractEmptyAggregateEventStub::reconstitute(
+            [],
+            new \DateTimeImmutable('now'),
+            [
+                'aggregateId' => UuidIdentity::fromString('3247cb6e-e9c7-4f3a-9c6c-0dec26a0353f'),
+                'aggregateVersion' => new AggregateVersion(0),
+                'metadata' => ['userId' => '123456'],
+            ]
+        );
     }
 
     public function testReconstitution(): void
