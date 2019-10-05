@@ -44,6 +44,14 @@ abstract class AbstractAggregateEvent implements AggregateEvent
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function getEventType(): string
+    {
+        return \get_called_class();
+    }
+
+    /**
      * Instantiate new aggregate event.
      *
      * @param Identity             $aggregateId

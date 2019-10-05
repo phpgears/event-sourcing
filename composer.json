@@ -24,7 +24,7 @@
   "require": {
     "php": "^7.1",
     "phpgears/aggregate": "~0.2",
-    "phpgears/event": "~0.3"
+    "phpgears/event": "~0.3.1"
   },
   "require-dev": {
     "brainmaestro/composer-git-hooks": "^2.1",
