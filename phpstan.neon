@@ -2,5 +2,3 @@ parameters:
   level: max
   paths:
     - src
-  ignoreErrors:
-    - '/^Variable method call on \$this\(Gears\\EventSourcing\\Aggregate\\AbstractAggregateRoot\)\.$/'

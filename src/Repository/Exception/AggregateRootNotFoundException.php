@@ -11,10 +11,10 @@
 
 declare(strict_types=1);
 
-namespace Gears\EventSourcing\Store\Repository\Exception;
+namespace Gears\EventSourcing\Repository\Exception;
 
 use Gears\Event\Exception\EventException;
 
-class AggregateRepositoryException extends EventException
+class AggregateRootNotFoundException extends EventException
 {
 }

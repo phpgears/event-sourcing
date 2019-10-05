@@ -11,13 +11,13 @@
 
 declare(strict_types=1);
 
-namespace Gears\EventSourcing\Store\Repository;
+namespace Gears\EventSourcing\Repository;
 
 use Gears\EventSourcing\Aggregate\AggregateRoot;
 use Gears\EventSourcing\Aggregate\AggregateVersion;
+use Gears\EventSourcing\Repository\Exception\AggregateRepositoryException;
+use Gears\EventSourcing\Repository\Exception\AggregateRootNotFoundException;
 use Gears\EventSourcing\Store\Event\EventStore;
-use Gears\EventSourcing\Store\Repository\Exception\AggregateRepositoryException;
-use Gears\EventSourcing\Store\Repository\Exception\AggregateRootNotFoundException;
 use Gears\EventSourcing\Store\Snapshot\SnapshotStore;
 use Gears\EventSourcing\Store\StoreStream;
 use Gears\Identity\Identity;

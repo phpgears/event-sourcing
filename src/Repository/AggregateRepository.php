@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace Gears\EventSourcing\Store\Repository;
+namespace Gears\EventSourcing\Repository;
 
 use Gears\EventSourcing\Aggregate\AggregateRoot;
 use Gears\Identity\Identity;
@@ -24,7 +24,7 @@ interface AggregateRepository
     /**
      * @param Identity $aggregateId
      *
-     * @throws \Gears\EventSourcing\Store\Repository\Exception\AggregateRootNotFoundException
+     * @throws \Gears\EventSourcing\Repository\Exception\AggregateRootNotFoundException
      *
      * @return AggregateRoot
      */
@@ -33,7 +33,7 @@ interface AggregateRepository
     /**
      * @param AggregateRoot $aggregateRoot
      *
-     * @throws \Gears\EventSourcing\Store\Repository\Exception\AggregateRepositoryException
+     * @throws \Gears\EventSourcing\Repository\Exception\AggregateRepositoryException
      */
     public function saveAggregateRoot(AggregateRoot $aggregateRoot): void;
 }

@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace Gears\EventSourcing\Store\Repository;
+namespace Gears\EventSourcing\Repository;
 
 use Gears\EventSourcing\Store\Event\EventStore;
 use Gears\EventSourcing\Store\GenericStoreStream;

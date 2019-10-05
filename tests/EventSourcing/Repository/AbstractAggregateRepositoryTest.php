@@ -11,15 +11,15 @@
 
 declare(strict_types=1);
 
-namespace Gears\EventSourcing\Tests\Store\Repository;
+namespace Gears\EventSourcing\Tests\Repository;
 
 use Gears\Event\EventArrayCollection;
 use Gears\EventSourcing\Aggregate\AggregateRoot;
 use Gears\EventSourcing\Aggregate\AggregateVersion;
 use Gears\EventSourcing\Event\AggregateEventArrayStream;
+use Gears\EventSourcing\Repository\Exception\AggregateRepositoryException;
+use Gears\EventSourcing\Repository\Exception\AggregateRootNotFoundException;
 use Gears\EventSourcing\Store\Event\EventStore;
-use Gears\EventSourcing\Store\Repository\Exception\AggregateRepositoryException;
-use Gears\EventSourcing\Store\Repository\Exception\AggregateRootNotFoundException;
 use Gears\EventSourcing\Store\Snapshot\GenericSnapshot;
 use Gears\EventSourcing\Store\Snapshot\SnapshotStore;
 use Gears\EventSourcing\Tests\Stub\AbstractAggregateEventStub;

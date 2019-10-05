@@ -148,7 +148,10 @@ abstract class AbstractAggregateRoot implements AggregateRoot
             ));
         }
 
-        $this->$method($event);
+        /** @var callable $callable */
+        $callable = [$this, $method];
+
+        \call_user_func($callable, $event);
     }
 
     /**

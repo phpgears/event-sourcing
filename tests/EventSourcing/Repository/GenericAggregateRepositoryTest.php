@@ -11,11 +11,11 @@
 
 declare(strict_types=1);
 
-namespace Gears\EventSourcing\Tests\Store\Repository;
+namespace Gears\EventSourcing\Tests\Repository;
 
+use Gears\EventSourcing\Repository\GenericAggregateRepository;
 use Gears\EventSourcing\Store\Event\EventStore;
 use Gears\EventSourcing\Store\GenericStoreStream;
-use Gears\EventSourcing\Store\Repository\GenericAggregateRepository;
 use Gears\EventSourcing\Tests\Stub\AbstractAggregateEventStub;
 use Gears\EventSourcing\Tests\Stub\AbstractAggregateRootStub;
 use Gears\Identity\Identity;
