@@ -50,7 +50,7 @@ final class InMemoryEventStore extends AbstractEventStore
         $length = $toVersion !== null ? $toVersion->getValue() - $fromVersion->getValue() + 1 : null;
         $events = \array_slice($this->streams[$streamId], $fromVersion->getValue() - 1, $length);
 
-        return new AggregateEventIteratorStream((new \ArrayObject($events))->getIterator());
+        return new AggregateEventIteratorStream(new \ArrayIterator($events));
     }
 
     /**

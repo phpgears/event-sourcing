@@ -43,15 +43,28 @@ class AggregateEventIteratorStreamTest extends TestCase
         ];
         $eventStream = new AggregateEventIteratorStream(new \ArrayIterator($events));
 
-        $eventStream->next();
-        $currentKey = $eventStream->key();
         static::assertCount(2, $eventStream);
-        static::assertEquals($currentKey, $eventStream->key());
 
         foreach ($eventStream as $event) {
             static::assertInstanceOf(AggregateEvent::class, $event);
         }
 
         static::assertNull($eventStream->key());
+    }
+
+    public function testStreamCount(): void
+    {
+        $identity = UuidIdentity::fromString('3247cb6e-e9c7-4f3a-9c6c-0dec26a0353f');
+
+        $events = [
+            AbstractEmptyAggregateEventStub::instance($identity),
+            AbstractEmptyAggregateEventStub::instance($identity),
+        ];
+        $collection = new AggregateEventIteratorStream(new \IteratorIterator(new \ArrayIterator($events)));
+
+        $collection->next();
+        $currentKey = $collection->key();
+        static::assertCount(2, $collection);
+        static::assertEquals($currentKey, $collection->key());
     }
 }

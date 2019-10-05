@@ -91,6 +91,10 @@ final class AggregateEventIteratorStream implements AggregateEventStream
      */
     public function count(): int
     {
+        if ($this->iterator instanceof \Countable) {
+            return $this->iterator->count();
+        }
+
         $currentKey = $this->iterator->key();
         $this->iterator->rewind();
 
