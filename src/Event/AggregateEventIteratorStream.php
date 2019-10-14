@@ -29,6 +29,9 @@ final class AggregateEventIteratorStream implements AggregateEventStream
      */
     public function __construct(\Iterator $iterator)
     {
+        // Prevents forward-only iterators such as \Generator
+        $iterator->rewind();
+
         $this->iterator = $iterator;
     }
 
