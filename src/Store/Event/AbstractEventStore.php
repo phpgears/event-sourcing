@@ -43,8 +43,6 @@ abstract class AbstractEventStore implements EventStore
         }
 
         if (!$this->streamExists($stream)) {
-            $this->createStream($stream);
-
             return new AggregateEventEmptyStream();
         }
 
@@ -84,8 +82,6 @@ abstract class AbstractEventStore implements EventStore
         }
 
         if (!$this->streamExists($stream)) {
-            $this->createStream($stream);
-
             return new AggregateEventEmptyStream();
         }
 
