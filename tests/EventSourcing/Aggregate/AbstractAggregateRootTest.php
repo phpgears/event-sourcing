@@ -56,6 +56,9 @@ class AbstractAggregateRootTest extends TestCase
         $aggregateEvent->expects(static::any())
             ->method('getAggregateVersion')
             ->will(static::returnValue(new AggregateVersion(0)));
+        $aggregateEvent->expects(static::any())
+            ->method('getEventType')
+            ->will(static::returnValue(\get_class($aggregateEvent)));
         /* @var AggregateEvent $aggregateEvent */
 
         AbstractAggregateRootStub::instantiateWithEvent($aggregateEvent);

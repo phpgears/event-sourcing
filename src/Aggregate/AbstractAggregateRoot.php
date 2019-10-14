@@ -163,11 +163,11 @@ abstract class AbstractAggregateRoot implements AggregateRoot
      */
     protected function getAggregateEventApplyMethodName(AggregateEvent $event): string
     {
-        $classParts = \explode('\\', \get_class($event));
-        /** @var string $className */
-        $className = \end($classParts);
+        $typeParts = \explode('\\', $event->getEventType());
+        /** @var string $eventType */
+        $eventType = \end($typeParts);
 
-        return 'apply' . \str_replace(' ', '', \ucwords(\strtr($className, '_-', '  ')));
+        return 'apply' . \str_replace(' ', '', \ucwords(\strtr($eventType, '_-', '  ')));
     }
 
     /**
