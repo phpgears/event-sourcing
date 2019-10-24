@@ -37,7 +37,7 @@ final class InMemorySnapshotStore extends AbstractSnapshotStore
             return null;
         }
 
-        return GenericSnapshot::fromAggregateRoot($this->deserializeAggregateRoot($this->streams[$streamId]));
+        return new GenericSnapshot($this->deserializeAggregateRoot($this->streams[$streamId]));
     }
 
     /**

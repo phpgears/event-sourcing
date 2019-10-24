@@ -49,7 +49,7 @@ class InMemorySnapshotStoreTest extends TestCase
             new AggregateEventArrayStream([$event])
         );
 
-        $snapshot = GenericSnapshot::fromAggregateRoot($aggregateRoot);
+        $snapshot = new GenericSnapshot($aggregateRoot);
 
         $snapshotStore = new InMemorySnapshotStore(new NativeAggregateSerializer());
         $snapshotStore->store($snapshot);

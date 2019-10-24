@@ -103,7 +103,7 @@ class AbstractAggregateRepositoryTest extends TestCase
         $aggregateRoot->expects(static::once())
             ->method('getRecordedEvents')
             ->will(static::returnValue(new EventArrayCollection([])));
-        $snapshot = GenericSnapshot::fromAggregateRoot($aggregateRoot);
+        $snapshot = new GenericSnapshot($aggregateRoot);
 
         $snapshotStore = $this->getMockBuilder(SnapshotStore::class)->disableOriginalConstructor()->getMock();
         $snapshotStore->expects(static::once())
@@ -135,7 +135,7 @@ class AbstractAggregateRepositoryTest extends TestCase
         /** @var EventStore $eventStore */
         $aggregateRoot = AbstractAggregateRootStub::instantiateWithEvent($event);
         $aggregateRoot->collectRecordedAggregateEvents();
-        $snapshot = GenericSnapshot::fromAggregateRoot($aggregateRoot);
+        $snapshot = new GenericSnapshot($aggregateRoot);
 
         $snapshotStore = $this->getMockBuilder(SnapshotStore::class)->disableOriginalConstructor()->getMock();
         $snapshotStore->expects(static::once())

@@ -51,7 +51,7 @@ class AbstractSnapshotStoreStub extends AbstractSnapshotStore
             return null;
         }
 
-        return GenericSnapshot::fromAggregateRoot($this->deserializeAggregateRoot($this->stream[$id]));
+        return new GenericSnapshot($this->deserializeAggregateRoot($this->stream[$id]));
     }
 
     /**

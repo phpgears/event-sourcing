@@ -37,7 +37,7 @@ class GenericSnapshotTest extends TestCase
         /** @var Identity $identity */
         $event = AbstractAggregateEventStub::instance($identity);
 
-        GenericSnapshot::fromAggregateRoot(AbstractAggregateRootStub::instantiateWithEvent($event));
+        new GenericSnapshot(AbstractAggregateRootStub::instantiateWithEvent($event));
     }
 
     public function testFromAggregateRoot(): void
@@ -48,7 +48,7 @@ class GenericSnapshotTest extends TestCase
         $aggregateRoot = AbstractAggregateRootStub::instantiateWithEvent($event);
         $aggregateRoot->collectRecordedAggregateEvents();
 
-        $snapshot = GenericSnapshot::fromAggregateRoot($aggregateRoot);
+        $snapshot = new GenericSnapshot($aggregateRoot);
 
         static::assertEquals($aggregateRoot, $snapshot->getAggregateRoot());
 

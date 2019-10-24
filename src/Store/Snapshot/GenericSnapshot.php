@@ -26,7 +26,7 @@ final class GenericSnapshot implements Snapshot
     /**
      * @var StoreStream
      */
-    private $stream;
+    private $storeStream;
 
     /**
      * @var AggregateRoot
@@ -36,23 +36,11 @@ final class GenericSnapshot implements Snapshot
     /**
      * GenericSnapshot constructor.
      *
-     * @param StoreStream   $stream
-     * @param AggregateRoot $aggregateRoot
-     */
-    private function __construct(StoreStream $stream, AggregateRoot $aggregateRoot)
-    {
-        $this->stream = $stream;
-        $this->aggregateRoot = $aggregateRoot;
-    }
-
-    /**
-     * Create from aggregateRoot.
-     *
      * @param AggregateRoot $aggregateRoot
      *
-     * @return self
+     * @throws SnapshotStoreException
      */
-    public static function fromAggregateRoot(AggregateRoot $aggregateRoot): self
+    public function __construct(AggregateRoot $aggregateRoot)
     {
         if ($aggregateRoot->getRecordedAggregateEvents()->count() !== 0
             || $aggregateRoot->getRecordedEvents()->count() !== 0
@@ -60,7 +48,8 @@ final class GenericSnapshot implements Snapshot
             throw new SnapshotStoreException('Cannot create an snapshot of an Aggregate root with recorded events');
         }
 
-        return new self(GenericStoreStream::fromAggregateRoot($aggregateRoot), $aggregateRoot);
+        $this->storeStream = GenericStoreStream::fromAggregateRoot($aggregateRoot);
+        $this->aggregateRoot = $aggregateRoot;
     }
 
     /**
@@ -68,7 +57,7 @@ final class GenericSnapshot implements Snapshot
      */
     public function getStoreStream(): StoreStream
     {
-        return $this->stream;
+        return $this->storeStream;
     }
 
     /**
