@@ -94,6 +94,10 @@ final class AggregateEventIteratorStream implements AggregateEventStream
      */
     public function count(): int
     {
+        if ($this->iterator instanceof \EmptyIterator) {
+            return 0;
+        }
+
         if ($this->iterator instanceof \Countable) {
             return $this->iterator->count();
         }
