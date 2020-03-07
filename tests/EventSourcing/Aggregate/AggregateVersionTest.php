@@ -74,4 +74,16 @@ class AggregateVersionTest extends TestCase
         static::assertTrue($version->isEqualTo(new AggregateVersion(10)));
         static::assertFalse($version->isEqualTo(new AggregateVersion(11)));
     }
+
+    public function testSerialization(): void
+    {
+        $version = new AggregateVersion(10);
+
+        $serialized = \version_compare(\PHP_VERSION, '7.4.0') >= 0
+            ? 'O:46:"Gears\EventSourcing\Aggregate\AggregateVersion":1:{s:5:"value";i:10;}'
+            : 'C:46:"Gears\EventSourcing\Aggregate\AggregateVersion":5:{i:10;}';
+
+        static::assertSame($serialized, \serialize($version));
+        static::assertSame(10, (\unserialize($serialized))->getValue());
+    }
 }

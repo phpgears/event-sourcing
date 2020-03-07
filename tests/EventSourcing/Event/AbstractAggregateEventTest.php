@@ -24,6 +24,15 @@ use PHPUnit\Framework\TestCase;
  */
 class AbstractAggregateEventTest extends TestCase
 {
+    public function testCommandType(): void
+    {
+        $stub = AbstractAggregateEventStub::instance(
+            UuidIdentity::fromString('3247cb6e-e9c7-4f3a-9c6c-0dec26a0353f')
+        );
+
+        static::assertEquals(AbstractAggregateEventStub::class, $stub->getEventType());
+    }
+
     public function testCreation(): void
     {
         $aggregateEvent = AbstractAggregateEventStub::instance(
@@ -95,5 +104,28 @@ class AbstractAggregateEventTest extends TestCase
 
         static::assertNotSame($aggregateEvent, $newAggregateEvent);
         static::assertEquals(10, $newAggregateEvent->getAggregateVersion()->getValue());
+    }
+
+    public function testNoSerialization(): void
+    {
+        $this->expectException(AggregateEventException::class);
+        $this->expectExceptionMessage(
+            'Aggregate event "Gears\EventSourcing\Tests\Stub\AbstractAggregateEventStub" cannot be serialized'
+        );
+
+        $aggregateEvent = AbstractAggregateEventStub::instance(
+            UuidIdentity::fromString('3247cb6e-e9c7-4f3a-9c6c-0dec26a0353f')
+        );
+        \serialize($aggregateEvent);
+    }
+
+    public function testNoDeserialization(): void
+    {
+        $this->expectException(AggregateEventException::class);
+        $this->expectExceptionMessage(
+            'Aggregate event "Gears\EventSourcing\Tests\Stub\AbstractAggregateEventStub" cannot be unserialized'
+        );
+
+        \unserialize('O:57:"Gears\EventSourcing\Tests\Stub\AbstractAggregateEventStub":0:{}');
     }
 }

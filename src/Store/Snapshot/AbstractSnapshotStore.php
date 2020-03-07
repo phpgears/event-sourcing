@@ -15,7 +15,6 @@ namespace Gears\EventSourcing\Store\Snapshot;
 
 use Gears\EventSourcing\Aggregate\AggregateRoot;
 use Gears\EventSourcing\Aggregate\Serializer\AggregateSerializer;
-use Gears\EventSourcing\Store\Snapshot\Exception\SnapshotStoreException;
 
 /**
  * Abstract snapshot implementation.
@@ -38,44 +37,26 @@ abstract class AbstractSnapshotStore implements SnapshotStore
     }
 
     /**
-     * Deserialize aggregate root.
-     *
-     * @param string $serialized
-     *
-     * @throws SnapshotStoreException
-     *
-     * @return AggregateRoot
-     */
-    final protected function deserializeAggregateRoot(string $serialized): AggregateRoot
-    {
-        $aggregateRoot = $this->serializer->fromSerialized($serialized);
-
-        if ($aggregateRoot->getRecordedAggregateEvents()->count() !== 0
-            || $aggregateRoot->getRecordedEvents()->count() !== 0
-        ) {
-            throw new SnapshotStoreException('Aggregate root coming from snapshot cannot have recorded events');
-        }
-
-        return $aggregateRoot;
-    }
-
-    /**
      * Serialize aggregate root.
      *
      * @param AggregateRoot $aggregateRoot
-     *
-     * @throws SnapshotStoreException
      *
      * @return string
      */
     final protected function serializeAggregateRoot(AggregateRoot $aggregateRoot): string
     {
-        if ($aggregateRoot->getRecordedAggregateEvents()->count() !== 0
-            || $aggregateRoot->getRecordedEvents()->count() !== 0
-        ) {
-            throw new SnapshotStoreException('Aggregate root cannot have recorded events in order to be snapshoted');
-        }
-
         return $this->serializer->serialize($aggregateRoot);
+    }
+
+    /**
+     * Deserialize aggregate root.
+     *
+     * @param string $serialized
+     *
+     * @return AggregateRoot
+     */
+    final protected function deserializeAggregateRoot(string $serialized): AggregateRoot
+    {
+        return $this->serializer->fromSerialized($serialized);
     }
 }

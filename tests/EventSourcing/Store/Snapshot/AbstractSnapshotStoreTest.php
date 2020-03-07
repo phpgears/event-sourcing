@@ -13,13 +13,13 @@ declare(strict_types=1);
 
 namespace Gears\EventSourcing\Tests\Store\Snapshot;
 
+use Gears\EventSourcing\Aggregate\AggregateRoot;
 use Gears\EventSourcing\Store\GenericStoreStream;
-use Gears\EventSourcing\Store\Snapshot\Exception\SnapshotStoreException;
-use Gears\EventSourcing\Tests\Stub\AbstractAggregateEventStub;
 use Gears\EventSourcing\Tests\Stub\AbstractAggregateRootStub;
 use Gears\EventSourcing\Tests\Stub\AbstractSnapshotStoreStub;
 use Gears\EventSourcing\Tests\Stub\SnapshotStub;
 use Gears\Identity\Identity;
+use Gears\Identity\UuidIdentity;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -27,39 +27,34 @@ use PHPUnit\Framework\TestCase;
  */
 class AbstractSnapshotStoreTest extends TestCase
 {
-    public function testInvalidAggregateRootStore(): void
+    public function testStore(): void
     {
-        $this->expectException(SnapshotStoreException::class);
-        $this->expectExceptionMessage('Aggregate root cannot have recorded events in order to be snapshoted');
-
         $identity = $this->getMockBuilder(Identity::class)->disableOriginalConstructor()->getMock();
         $identity->expects(static::once())
             ->method('getValue')
             ->will(static::returnValue('aaa'));
-        /** @var Identity $identity */
-        $event = AbstractAggregateEventStub::instance($identity);
-        $aggregateRoot = AbstractAggregateRootStub::instantiateWithEvent($event);
+        $aggregateRoot = AbstractAggregateRootStub::instantiateFromIdentity($identity);
 
-        (new AbstractSnapshotStoreStub())->store(new SnapshotStub($aggregateRoot));
+        $snapshotStore = new AbstractSnapshotStoreStub();
+        $snapshotStore->store(new SnapshotStub($aggregateRoot));
+
+        static::assertArrayHasKey('aaa', $snapshotStore->getStream());
+        static::assertInstanceOf(AggregateRoot::class, \unserialize($snapshotStore->getStream()['aaa']));
     }
 
     public function testInvalidAggregateRootLoad(): void
     {
-        $this->expectException(SnapshotStoreException::class);
-        $this->expectExceptionMessage('Aggregate root coming from snapshot cannot have recorded events');
-
-        $identity = $this->getMockBuilder(Identity::class)->disableOriginalConstructor()->getMock();
-        $identity->expects(static::any())
-            ->method('getValue')
-            ->will(static::returnValue('aaa'));
-        /** @var Identity $identity */
-        $event = AbstractAggregateEventStub::instance($identity);
-        $aggregateRoot = AbstractAggregateRootStub::instantiateWithEvent($event);
+        $aggregateRoot = AbstractAggregateRootStub::instantiateFromIdentity(
+            UuidIdentity::fromString('3247cb6e-e9c7-4f3a-9c6c-0dec26a0353f')
+        );
 
         $stream = [
-            'aaa' => \serialize($aggregateRoot),
+            '3247cb6e-e9c7-4f3a-9c6c-0dec26a0353f' => \serialize($aggregateRoot),
         ];
 
-        (new AbstractSnapshotStoreStub($stream))->load(GenericStoreStream::fromAggregateRoot($aggregateRoot));
+        $snapshotStore = new AbstractSnapshotStoreStub($stream);
+        $returnAggregateRoot = $snapshotStore->load(GenericStoreStream::fromAggregateRoot($aggregateRoot));
+
+        static::assertInstanceOf(AggregateRoot::class, $returnAggregateRoot->getAggregateRoot());
     }
 }

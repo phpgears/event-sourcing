@@ -42,6 +42,16 @@ class AbstractSnapshotStoreStub extends AbstractSnapshotStore
     }
 
     /**
+     * Get stream.
+     *
+     * @return string[]
+     */
+    public function getStream(): array
+    {
+        return $this->stream;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function load(StoreStream $stream): ?Snapshot

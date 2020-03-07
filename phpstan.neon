@@ -7,3 +7,5 @@ parameters:
       paths:
         - src/Event/AggregateEventArrayStream.php
         - src/Event/AggregateEventIteratorStream.php
+    - message: '/^Variable property access on \$this\(Gears\\EventSourcing\\Aggregate\\AbstractAggregateRoot\)\.$/'
+      path: src/Aggregate/AbstractAggregateRoot.php

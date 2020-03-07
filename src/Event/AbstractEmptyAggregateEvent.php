@@ -46,7 +46,7 @@ abstract class AbstractEmptyAggregateEvent implements AggregateEvent
      */
     public function getEventType(): string
     {
-        return \get_called_class();
+        return static::class;
     }
 
     /**
@@ -96,6 +96,37 @@ abstract class AbstractEmptyAggregateEvent implements AggregateEvent
         }
 
         return $event;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    final public function __serialize(): array
+    {
+        throw new AggregateEventException(\sprintf('Aggregate event "%s" cannot be serialized', static::class));
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    final public function __unserialize(array $data): void
+    {
+        throw new AggregateEventException(\sprintf('Aggregate event "%s" cannot be unserialized', static::class));
+    }
+
+    /**
+     * @return string[]
+     */
+    final public function __sleep(): array
+    {
+        throw new AggregateEventException(\sprintf('Aggregate event "%s" cannot be serialized', static::class));
+    }
+
+    final public function __wakeup(): void
+    {
+        throw new AggregateEventException(\sprintf('Aggregate event "%s" cannot be unserialized', static::class));
     }
 
     /**

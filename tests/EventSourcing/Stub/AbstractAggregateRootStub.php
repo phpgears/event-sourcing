@@ -22,6 +22,8 @@ use Gears\Identity\Identity;
  */
 class AbstractAggregateRootStub extends AbstractAggregateRoot
 {
+    protected $aggregateParam = 'value';
+
     /**
      * @param AggregateEvent $event
      *

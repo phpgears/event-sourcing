@@ -19,7 +19,7 @@ use Gears\EventSourcing\Event\AggregateEventStream;
 /**
  * AggregateRoot interface.
  */
-interface AggregateRoot extends BaseAggregateRoot
+interface AggregateRoot extends BaseAggregateRoot, \Serializable
 {
     /**
      * Get aggregate version.

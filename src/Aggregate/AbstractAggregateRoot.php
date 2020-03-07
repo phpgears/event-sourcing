@@ -16,6 +16,7 @@ namespace Gears\EventSourcing\Aggregate;
 use Gears\Aggregate\EventBehaviour;
 use Gears\EventSourcing\Aggregate\Exception\AggregateException;
 use Gears\EventSourcing\Aggregate\Exception\AggregateVersionException;
+use Gears\EventSourcing\Aggregate\Serializer\Exception\AggregateSerializationException;
 use Gears\EventSourcing\Event\AggregateEvent;
 use Gears\EventSourcing\Event\AggregateEventIteratorStream;
 use Gears\EventSourcing\Event\AggregateEventStream;
@@ -31,7 +32,7 @@ abstract class AbstractAggregateRoot implements AggregateRoot
     use AggregateBehaviour, EventBehaviour;
 
     /**
-     * @var \ArrayObject<string, AggregateEvent>
+     * @var \ArrayObject<string, AggregateEvent>|null
      */
     private $recordedAggregateEvents;
 
@@ -40,7 +41,6 @@ abstract class AbstractAggregateRoot implements AggregateRoot
      */
     final protected function __construct()
     {
-        $this->recordedAggregateEvents = new \ArrayObject();
         $this->version = new AggregateVersion(0);
     }
 
@@ -126,6 +126,10 @@ abstract class AbstractAggregateRoot implements AggregateRoot
             ]
         );
 
+        if ($this->recordedAggregateEvents === null) {
+            $this->recordedAggregateEvents = new \ArrayObject();
+        }
+
         $this->recordedAggregateEvents->append($recordedEvent);
     }
 
@@ -175,7 +179,11 @@ abstract class AbstractAggregateRoot implements AggregateRoot
      */
     final public function getRecordedAggregateEvents(): AggregateEventStream
     {
-        return new AggregateEventIteratorStream($this->recordedAggregateEvents->getIterator());
+        return new AggregateEventIteratorStream(
+            $this->recordedAggregateEvents !== null
+                ? $this->recordedAggregateEvents->getIterator()
+                : new \EmptyIterator()
+        );
     }
 
     /**
@@ -183,7 +191,7 @@ abstract class AbstractAggregateRoot implements AggregateRoot
      */
     final public function clearRecordedAggregateEvents(): void
     {
-        $this->recordedAggregateEvents = new \ArrayObject();
+        $this->recordedAggregateEvents = null;
     }
 
     /**
@@ -191,10 +199,91 @@ abstract class AbstractAggregateRoot implements AggregateRoot
      */
     final public function collectRecordedAggregateEvents(): AggregateEventStream
     {
-        $recordedEvents = new AggregateEventIteratorStream($this->recordedAggregateEvents->getIterator());
+        $recordedEvents = new AggregateEventIteratorStream(
+            $this->recordedAggregateEvents !== null
+                ? $this->recordedAggregateEvents->getIterator()
+                : new \EmptyIterator()
+        );
 
         $this->recordedAggregateEvents = new \ArrayObject();
 
         return $recordedEvents;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    final public function __serialize(): array
+    {
+        return $this->getSerializationAttributes();
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     */
+    final public function __unserialize(array $data): void
+    {
+        $this->unserializeAttributes($data);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    final public function serialize(): string
+    {
+        return \serialize($this->getSerializationAttributes());
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @param mixed $serialized
+     */
+    final public function unserialize($serialized): void
+    {
+        $this->unserializeAttributes(\unserialize($serialized));
+    }
+
+    /**
+     * Get serialization data.
+     *
+     * @throws AggregateSerializationException
+     *
+     * @return array<string, mixed>
+     */
+    private function getSerializationAttributes(): array
+    {
+        if (($this->recordedAggregateEvents !== null && $this->recordedAggregateEvents->count() !== 0)
+            || ($this->recordedEvents !== null && $this->recordedEvents->count() !== 0)
+        ) {
+            throw new AggregateSerializationException('Aggregate root with recorded events cannot be serialized');
+        }
+
+        $attributes = [];
+        foreach ((new \ReflectionObject($this))->getProperties() as $reflectionProperty) {
+            if (!$reflectionProperty->isStatic()) {
+                $reflectionProperty->setAccessible(true);
+                $attributes[$reflectionProperty->getName()] = $reflectionProperty->getValue($this);
+            }
+        }
+
+        $attributes['identity'] = $this->identity;
+        $attributes['version'] = $this->version;
+
+        return $attributes;
+    }
+
+    /**
+     * Unserialize attributes.
+     *
+     * @param array<string, mixed> $attributes
+     */
+    private function unserializeAttributes(array $attributes): void
+    {
+        foreach ($attributes as $attribute => $value) {
+            if (!\in_array($attribute, ['recordedAggregateEvents', 'recordedEvents'], true)) {
+                $this->{$attribute} = $value;
+            }
+        }
     }
 }

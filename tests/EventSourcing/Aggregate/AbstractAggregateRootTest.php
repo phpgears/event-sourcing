@@ -16,6 +16,7 @@ namespace Gears\EventSourcing\Tests\Aggregate;
 use Gears\EventSourcing\Aggregate\AggregateVersion;
 use Gears\EventSourcing\Aggregate\Exception\AggregateException;
 use Gears\EventSourcing\Aggregate\Exception\AggregateVersionException;
+use Gears\EventSourcing\Aggregate\Serializer\Exception\AggregateSerializationException;
 use Gears\EventSourcing\Event\AggregateEvent;
 use Gears\EventSourcing\Event\AggregateEventArrayStream;
 use Gears\EventSourcing\Tests\Stub\AbstractAggregateEventStub;
@@ -140,5 +141,39 @@ class AbstractAggregateRootTest extends TestCase
         static::assertEquals($aggregateEvent->getAggregateId(), $aggregateRoot->getIdentity());
         static::assertEquals($aggregateEvent->getAggregateVersion(), $aggregateRoot->getVersion());
         static::assertCount(0, $aggregateRoot->collectRecordedAggregateEvents());
+    }
+
+    public function testNoSerialization(): void
+    {
+        $this->expectException(AggregateSerializationException::class);
+        $this->expectExceptionMessage('Aggregate root with recorded events cannot be serialized');
+
+        $aggregateEvent = AbstractAggregateEventStub::instance(
+            UuidIdentity::fromString('3247cb6e-e9c7-4f3a-9c6c-0dec26a0353f')
+        );
+
+        \serialize(AbstractAggregateRootStub::instantiateWithEvent($aggregateEvent));
+    }
+
+    public function testSerialization(): void
+    {
+        $identity = UuidIdentity::fromString('828b9a86-959c-47f8-af97-fc7dda3325ca');
+        $aggregateRoot = AbstractAggregateRootStub::instantiateFromIdentity($identity);
+
+        $serialized = \version_compare(\PHP_VERSION, '7.4.0') >= 0
+            ? 'O:56:"Gears\EventSourcing\Tests\Stub\AbstractAggregateRootStub":3:{'
+                . 's:14:"aggregateParam";s:5:"value";'
+                . 's:8:"identity";C:27:"Gears\Identity\UuidIdentity":44:{s:36:"828b9a86-959c-47f8-af97-fc7dda3325ca";}'
+                . 's:7:"version";O:46:"Gears\EventSourcing\Aggregate\AggregateVersion":1:{s:5:"value";i:0;}}'
+            : 'C:56:"Gears\EventSourcing\Tests\Stub\AbstractAggregateRootStub":215:{a:3:{'
+                . 's:14:"aggregateParam";s:5:"value";'
+                . 's:8:"identity";C:27:"Gears\Identity\UuidIdentity":44:{s:36:"828b9a86-959c-47f8-af97-fc7dda3325ca";}'
+                . 's:7:"version";C:46:"Gears\EventSourcing\Aggregate\AggregateVersion":4:{i:0;}}}';
+
+        static::assertSame($serialized, \serialize($aggregateRoot));
+        static::assertSame(
+            $aggregateRoot->getIdentity()->getValue(),
+            (\unserialize($serialized))->getIdentity()->getValue()
+        );
     }
 }

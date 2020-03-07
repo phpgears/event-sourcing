@@ -15,7 +15,7 @@ namespace Gears\EventSourcing\Aggregate;
 
 use Gears\EventSourcing\Aggregate\Exception\AggregateVersionException;
 
-final class AggregateVersion
+final class AggregateVersion implements \Serializable
 {
     /**
      * @var int
@@ -90,5 +90,39 @@ final class AggregateVersion
         $clone->value = $this->value - 1;
 
         return $clone;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function __serialize(): array
+    {
+        return ['value' => $this->value];
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     */
+    public function __unserialize(array $data): void
+    {
+        $this->value = $data['value'];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function serialize(): string
+    {
+        return \serialize($this->value);
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @param mixed $serialized
+     */
+    public function unserialize($serialized): void
+    {
+        $this->value = \unserialize($serialized, ['allowed_classes' => false]);
     }
 }
