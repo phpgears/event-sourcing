@@ -18,14 +18,14 @@ use Gears\EventSourcing\Event\Exception\InvalidAggregateEventException;
 final class AggregateEventIteratorStream implements AggregateEventStream
 {
     /**
-     * @var \Iterator
+     * @var \Iterator<AggregateEvent>
      */
     private $iterator;
 
     /**
      * AggregateEventIteratorStream constructor.
      *
-     * @param \Iterator $iterator
+     * @param \Iterator<mixed> $iterator
      */
     public function __construct(\Iterator $iterator)
     {
@@ -42,6 +42,7 @@ final class AggregateEventIteratorStream implements AggregateEventStream
      */
     public function current(): AggregateEvent
     {
+        /** @var mixed $event */
         $event = $this->iterator->current();
 
         if (!$event instanceof AggregateEvent) {

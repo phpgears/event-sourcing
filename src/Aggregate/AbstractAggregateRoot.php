@@ -31,7 +31,7 @@ abstract class AbstractAggregateRoot implements AggregateRoot
     use AggregateBehaviour, EventBehaviour;
 
     /**
-     * @var \ArrayObject
+     * @var \ArrayObject<string, AggregateEvent>
      */
     private $recordedAggregateEvents;
 

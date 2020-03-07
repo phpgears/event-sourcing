@@ -2,3 +2,8 @@ parameters:
   level: max
   paths:
     - src
+  ignoreErrors:
+    - message: '/^Method Gears\\EventSourcing\\Event\\AggregateEvent(Array|Iterator)Stream::key\(\) has no return typehint specified\.$/'
+      paths:
+        - src/Event/AggregateEventArrayStream.php
+        - src/Event/AggregateEventIteratorStream.php
