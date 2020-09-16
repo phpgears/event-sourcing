@@ -205,7 +205,7 @@ abstract class AbstractAggregateRoot implements AggregateRoot
                 : new \EmptyIterator()
         );
 
-        $this->recordedAggregateEvents = new \ArrayObject();
+        $this->recordedAggregateEvents = null;
 
         return $recordedEvents;
     }
