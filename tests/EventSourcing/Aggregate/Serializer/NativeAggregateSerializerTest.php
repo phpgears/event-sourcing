@@ -32,9 +32,9 @@ class NativeAggregateSerializerTest extends TestCase
         $serialized = (new NativeAggregateSerializer())->serialize($aggregateRoot);
 
         if (\method_exists($this, 'assertStringContainsString')) {
-            static::assertStringContainsString('{s:36:"828b9a86-959c-47f8-af97-fc7dda3325ca";}', $serialized);
+            static::assertStringContainsString('s:36:"828b9a86-959c-47f8-af97-fc7dda3325ca";', $serialized);
         } else {
-            static::assertContains('{s:36:"828b9a86-959c-47f8-af97-fc7dda3325ca";}', $serialized);
+            static::assertContains('s:36:"828b9a86-959c-47f8-af97-fc7dda3325ca";', $serialized);
         }
     }
 

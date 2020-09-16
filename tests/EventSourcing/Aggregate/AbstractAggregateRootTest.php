@@ -163,8 +163,9 @@ class AbstractAggregateRootTest extends TestCase
         $serialized = \version_compare(\PHP_VERSION, '7.4.0') >= 0
             ? 'O:56:"Gears\EventSourcing\Tests\Stub\AbstractAggregateRootStub":3:{'
                 . 's:14:"aggregateParam";s:5:"value";'
-                . 's:8:"identity";C:27:"Gears\Identity\UuidIdentity":44:{s:36:"828b9a86-959c-47f8-af97-fc7dda3325ca";}'
-                . 's:7:"version";O:46:"Gears\EventSourcing\Aggregate\AggregateVersion":1:{s:5:"value";i:0;}}'
+                . 's:8:"identity";O:27:"Gears\Identity\UuidIdentity":1:{'
+                . 's:5:"value";s:36:"828b9a86-959c-47f8-af97-fc7dda3325ca";'
+                . '}s:7:"version";O:46:"Gears\EventSourcing\Aggregate\AggregateVersion":1:{s:5:"value";i:0;}}'
             : 'C:56:"Gears\EventSourcing\Tests\Stub\AbstractAggregateRootStub":215:{a:3:{'
                 . 's:14:"aggregateParam";s:5:"value";'
                 . 's:8:"identity";C:27:"Gears\Identity\UuidIdentity":44:{s:36:"828b9a86-959c-47f8-af97-fc7dda3325ca";}'
