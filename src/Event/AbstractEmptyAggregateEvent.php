@@ -34,7 +34,7 @@ abstract class AbstractEmptyAggregateEvent implements AggregateEvent
      */
     final protected function __construct(Identity $aggregateId, \DateTimeImmutable $createdAt)
     {
-        $this->assertImmutable();
+        $this->setPayload(null);
 
         $this->identity = $aggregateId;
         $this->version = new AggregateVersion(0);
@@ -47,6 +47,22 @@ abstract class AbstractEmptyAggregateEvent implements AggregateEvent
     public function getEventType(): string
     {
         return static::class;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getPayload(): array
+    {
+        return [];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function toArray(): array
+    {
+        return [];
     }
 
     /**
@@ -73,7 +89,7 @@ abstract class AbstractEmptyAggregateEvent implements AggregateEvent
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    final public static function reconstitute(array $payload, \DateTimeImmutable $createdAt, array $attributes = [])
+    final public static function reconstitute(iterable $payload, \DateTimeImmutable $createdAt, array $attributes = [])
     {
         $event = new static($attributes['aggregateId'], $createdAt);
 

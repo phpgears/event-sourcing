@@ -117,10 +117,11 @@ abstract class AbstractEventStore implements EventStore
         }
 
         $eventStream->rewind();
-        $expectedVersion = $eventStream->current()->getAggregateVersion()->getPrevious();
 
+        $expectedVersion = $eventStream->current()->getAggregateVersion()->getPrevious();
         $currentVersion = $this->getStreamVersion($stream);
-        if (!$currentVersion->isEqualTo($expectedVersion)) {
+
+        if (!$expectedVersion->isEqualTo($currentVersion)) {
             throw new ConcurrencyException(\sprintf(
                 'Expected stream version "%s" does not match current version "%s"',
                 $expectedVersion->getValue(),
@@ -129,9 +130,7 @@ abstract class AbstractEventStore implements EventStore
         }
 
         foreach ($eventStream as $aggregateEvent) {
-            $aggregateVersion = $aggregateEvent->getAggregateVersion();
-
-            if (!$aggregateVersion->getPrevious()->isEqualTo($currentVersion)) {
+            if (!$aggregateEvent->getAggregateVersion()->getPrevious()->isEqualTo($currentVersion)) {
                 throw new ConcurrencyException('Event stream cannot be stored due to versions mismatch');
             }
 
@@ -139,6 +138,7 @@ abstract class AbstractEventStore implements EventStore
         }
 
         $eventStream->rewind();
+
         $this->storeEvents($stream, $eventStream);
     }
 

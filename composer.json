@@ -23,8 +23,7 @@
   "prefer-stable": true,
   "require": {
     "php": "^7.1",
-    "phpgears/aggregate": "~0.2.1",
-    "phpgears/event": "~0.3.3"
+    "phpgears/aggregate": "dev-reflection-based"
   },
   "require-dev": {
     "brainmaestro/composer-git-hooks": "^2.8",

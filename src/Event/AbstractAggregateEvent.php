@@ -29,17 +29,16 @@ abstract class AbstractAggregateEvent implements AggregateEvent
     /**
      * Prevent aggregate event direct instantiation.
      *
-     * @param Identity             $aggregateId
-     * @param array<string, mixed> $payload
-     * @param \DateTimeImmutable   $createdAt
+     * @param Identity           $aggregateId
+     * @param iterable<mixed>    $payload
+     * @param \DateTimeImmutable $createdAt
      */
-    final protected function __construct(Identity $aggregateId, array $payload, \DateTimeImmutable $createdAt)
+    final protected function __construct(Identity $aggregateId, iterable $payload, \DateTimeImmutable $createdAt)
     {
-        $this->assertImmutable();
+        $this->setPayload($payload);
 
         $this->identity = $aggregateId;
         $this->version = new AggregateVersion(0);
-        $this->setPayload($payload);
         $this->createdAt = $createdAt->setTimezone(new \DateTimeZone('UTC'));
     }
 
@@ -49,6 +48,14 @@ abstract class AbstractAggregateEvent implements AggregateEvent
     public function getEventType(): string
     {
         return static::class;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function toArray(): array
+    {
+        return $this->getPayloadRaw();
     }
 
     /**
@@ -74,7 +81,7 @@ abstract class AbstractAggregateEvent implements AggregateEvent
      *
      * @return mixed|self
      */
-    final public static function reconstitute(array $payload, \DateTimeImmutable $createdAt, array $attributes = [])
+    final public static function reconstitute(iterable $payload, \DateTimeImmutable $createdAt, array $attributes = [])
     {
         $event = new static($attributes['aggregateId'], $payload, $createdAt);
 

@@ -79,7 +79,7 @@ abstract class AbstractAggregateRoot implements AggregateRoot
         foreach ($eventStream as $event) {
             $aggregateVersion = $event->getAggregateVersion();
 
-            if (!$aggregateVersion->isEqualTo($this->version->getNext())) {
+            if (!$this->version->getNext()->isEqualTo($aggregateVersion)) {
                 throw new AggregateVersionException(\sprintf(
                     'Aggregate event "%s" cannot be replayed, event version is "%s" and aggregate is "%s"',
                     \get_class($event),
