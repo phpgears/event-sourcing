@@ -57,7 +57,7 @@ abstract class AbstractAggregateRoot implements AggregateRoot
     /**
      * {@inheritdoc}
      */
-    final public static function reconstituteFromEventStream(AggregateEventStream $eventStream): self
+    final public static function reconstituteFromEventStream(AggregateEventStream $eventStream)
     {
         $instance = new static();
         $instance->replayAggregateEventStream($eventStream);

@@ -35,7 +35,7 @@ interface AggregateRoot extends BaseAggregateRoot, \Serializable
      *
      * @throws \Gears\EventSourcing\Aggregate\Exception\AggregateException
      *
-     * @return mixed|self
+     * @return static
      */
     public static function reconstituteFromEventStream(AggregateEventStream $eventStream);
 

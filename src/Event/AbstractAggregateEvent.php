@@ -65,7 +65,7 @@ abstract class AbstractAggregateEvent implements AggregateEvent
      * @param array<string, mixed> $payload
      * @param TimeProvider|null    $timeProvider
      *
-     * @return mixed|self
+     * @return static
      */
     final protected static function occurred(Identity $aggregateId, array $payload, ?TimeProvider $timeProvider = null)
     {
@@ -78,8 +78,6 @@ abstract class AbstractAggregateEvent implements AggregateEvent
      * {@inheritdoc}
      *
      * @throws AggregateEventException
-     *
-     * @return mixed|self
      */
     final public static function reconstitute(iterable $payload, \DateTimeImmutable $createdAt, array $attributes = [])
     {

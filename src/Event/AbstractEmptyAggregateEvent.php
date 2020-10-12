@@ -71,7 +71,7 @@ abstract class AbstractEmptyAggregateEvent implements AggregateEvent
      * @param Identity          $aggregateId
      * @param TimeProvider|null $timeProvider
      *
-     * @return mixed|self
+     * @return static
      */
     final protected static function occurred(Identity $aggregateId, ?TimeProvider $timeProvider = null)
     {
@@ -84,8 +84,6 @@ abstract class AbstractEmptyAggregateEvent implements AggregateEvent
      * {@inheritdoc}
      *
      * @throws AggregateEventException
-     *
-     * @return mixed|self
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
