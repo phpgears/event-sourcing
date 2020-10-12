@@ -39,7 +39,10 @@ class AbstractSnapshotStoreTest extends TestCase
         $snapshotStore->store(new SnapshotStub($aggregateRoot));
 
         static::assertArrayHasKey('aaa', $snapshotStore->getStream());
-        static::assertInstanceOf(AggregateRoot::class, \unserialize($snapshotStore->getStream()['aaa']));
+        static::assertInstanceOf(
+            AggregateRoot::class,
+            \unserialize(\stripslashes($snapshotStore->getStream()['aaa']))
+        );
     }
 
     public function testInvalidAggregateRootLoad(): void
@@ -49,7 +52,7 @@ class AbstractSnapshotStoreTest extends TestCase
         );
 
         $stream = [
-            '3247cb6e-e9c7-4f3a-9c6c-0dec26a0353f' => \serialize($aggregateRoot),
+            '3247cb6e-e9c7-4f3a-9c6c-0dec26a0353f' => \addslashes(\serialize($aggregateRoot)),
         ];
 
         $snapshotStore = new AbstractSnapshotStoreStub($stream);

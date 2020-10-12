@@ -26,7 +26,7 @@ final class NativeAggregateSerializer implements AggregateSerializer
      */
     public function serialize(AggregateRoot $aggregateRoot): string
     {
-        return \serialize($aggregateRoot);
+        return \addslashes(\serialize($aggregateRoot));
     }
 
     /**
@@ -34,7 +34,7 @@ final class NativeAggregateSerializer implements AggregateSerializer
      */
     public function fromSerialized(string $serialized): AggregateRoot
     {
-        $aggregateRoot = \unserialize($serialized);
+        $aggregateRoot = \unserialize(\stripslashes($serialized));
 
         if (!$aggregateRoot instanceof AggregateRoot) {
             throw new AggregateSerializationException('Invalid unserialized aggregate root');

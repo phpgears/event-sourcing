@@ -32,9 +32,9 @@ class NativeAggregateSerializerTest extends TestCase
         $serialized = (new NativeAggregateSerializer())->serialize($aggregateRoot);
 
         if (\method_exists($this, 'assertStringContainsString')) {
-            static::assertStringContainsString('s:36:"828b9a86-959c-47f8-af97-fc7dda3325ca";', $serialized);
+            static::assertStringContainsString('s:36:\"828b9a86-959c-47f8-af97-fc7dda3325ca\";', $serialized);
         } else {
-            static::assertContains('s:36:"828b9a86-959c-47f8-af97-fc7dda3325ca";', $serialized);
+            static::assertContains('s:36:\"828b9a86-959c-47f8-af97-fc7dda3325ca\";', $serialized);
         }
     }
 
@@ -43,7 +43,7 @@ class NativeAggregateSerializerTest extends TestCase
         $identity = UuidIdentity::fromString('828b9a86-959c-47f8-af97-fc7dda3325ca');
         $aggregateRoot = AbstractAggregateRootStub::instantiateFromIdentity($identity);
 
-        $deserialized = (new NativeAggregateSerializer())->fromSerialized(\serialize($aggregateRoot));
+        $deserialized = (new NativeAggregateSerializer())->fromSerialized(\addslashes(\serialize($aggregateRoot)));
 
         static::assertEquals($aggregateRoot, $deserialized);
     }
@@ -53,6 +53,6 @@ class NativeAggregateSerializerTest extends TestCase
         $this->expectException(AggregateSerializationException::class);
         $this->expectExceptionMessage('Invalid unserialized aggregate root');
 
-        (new NativeAggregateSerializer())->fromSerialized(\serialize(new \stdClass()));
+        (new NativeAggregateSerializer())->fromSerialized(\addslashes(\serialize(new \stdClass())));
     }
 }
